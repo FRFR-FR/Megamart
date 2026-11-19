@@ -87,7 +87,7 @@ jobs:
           echo "ae315a79b623f244700e4afb9246c46a26066782e049ba174bf3ba433970ee9c  $RUNNER_TEMP/csf-kokoro/kokoro-v1.0.onnx" | sha256sum -c -
           echo "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d  $RUNNER_TEMP/csf-kokoro/voices-v1.0.bin" | sha256sum -c -
 
-      - name: Download optional licensed city ambience
+      - name: Download optional NYC street ambience
         shell: bash
         run: |
           set -euo pipefail
@@ -108,8 +108,14 @@ jobs:
           FPS: ${{ inputs.fps || '30' }}
         run: |
           set -euo pipefail
-          shopt -s nullglob
-          stories=( $STORY_GLOB )
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            mapfile -t stories < <(
+              jq -r '.commits[]? | ((.added // []) + (.modified // []))[]? | select(startswith("production/stories/") and endswith(".json"))' "$GITHUB_EVENT_PATH" | sort -u
+            )
+          else
+            shopt -s nullglob
+            stories=( $STORY_GLOB )
+          fi
           if [ "${#stories[@]}" -eq 0 ]; then
             echo "No stories matched: $STORY_GLOB"
             exit 0
@@ -124,13 +130,18 @@ jobs:
             mkdir -p "$voice_dir" production/renders
             cp "$RUNNER_TEMP/csf-kokoro/kokoro-v1.0.onnx" "$voice_dir/kokoro-v1.0.onnx"
             cp "$RUNNER_TEMP/csf-kokoro/voices-v1.0.bin" "$voice_dir/voices-v1.0.bin"
-            python factory/tools/lint_script.py "$script" --dur 55-70
-            python factory/tools/tts_lines.py "$script" "$voice_dir" --voice bm_george --speed 1.35
             target_duration="$(python -c 'import json,sys; print(float(json.load(open(sys.argv[1]))["duration"]))' "$story")"
+            if python -c 'import sys; raise SystemExit(0 if float(sys.argv[1]) <= 35 else 1)' "$target_duration"; then
+              lint_range="25-35"
+            else
+              lint_range="55-70"
+            fi
+            python factory/tools/lint_script.py "$script" --dur "$lint_range"
+            python factory/tools/tts_lines.py "$script" "$voice_dir" --voice bm_george --speed 1.35
             source_duration="$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$voice_dir/voice.wav")"
             atempo="$(python -c 'import sys; x=float(sys.argv[1])/float(sys.argv[2]); assert .5 <= x <= 2.0, f"Voice stretch ratio out of safe range: {x}"; print(f"{x:.6f}")' "$source_duration" "$target_duration")"
             ffmpeg -y -loglevel error -i "$voice_dir/voice.wav" -filter:a "atempo=$atempo,apad,atrim=duration=$target_duration" -ar 48000 -ac 1 "$voice_dir/voice-fit.wav"
-            if [ "$NYC_AMBIENCE_READY" = "true" ]; then
+            if [ "$NYC_AMBIENCE_READY" = "true" ] && [ "$base" = "nyc-walkthrough-60s" ]; then
               ffmpeg -y -loglevel error -i "$voice_dir/voice-fit.wav" -i "$RUNNER_TEMP/nyc-street-ambience.mp3" -filter_complex "[0:a]volume=1.0[voice];[1:a]volume=0.16,atrim=duration=$target_duration[amb];[voice][amb]amix=inputs=2:duration=first:dropout_transition=2,alimiter=limit=0.95[mix]" -map "[mix]" -ar 48000 -ac 1 "$voice_dir/mix.wav"
             else
               cp "$voice_dir/voice-fit.wav" "$voice_dir/mix.wav"
