@@ -17,6 +17,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg zip
+
       - name: Verify original is preserved
         run: |
           test -s production/renders/nyc-walkthrough-60s.mp4
