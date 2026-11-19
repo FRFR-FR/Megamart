@@ -1,4 +1,4 @@
-name: Cartoon Short Factory — install and 10-second render
+name: Cartoon Short Factory — verify, install, and 10-second render
 
 on:
   push:
@@ -43,6 +43,7 @@ jobs:
           test -f SKILL.md
           test -f factory/render/package-lock.json
           test -f factory/render/story.example.json
+          test "$(find . -type f -not -path "./.git/*" -not -path "./cartoon_short_factory_bundle.py" | wc -l)" -ge 120
 
       - name: Commit the exact extracted package to main
         shell: bash
@@ -50,7 +51,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A -- SKILL.md factory references templates
+          git add -A -- . ':!cartoon_short_factory_bundle.py' ':!renders/'
           if ! git diff --cached --quiet; then
             git commit -m "Install checksum-verified Cartoon Short Factory package"
             git push origin HEAD:main
