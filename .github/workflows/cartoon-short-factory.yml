@@ -54,6 +54,7 @@ jobs:
           git add -A -- . ':!cartoon_short_factory_bundle.py' ':!renders/'
           if ! git diff --cached --quiet; then
             git commit -m "Install checksum-verified Cartoon Short Factory package"
+            git pull --rebase origin main
             git push origin HEAD:main
           else
             echo "Extracted package is already present; no source commit needed."
