@@ -119,9 +119,13 @@ jobs:
                       scale_timeline(item)
 
           scale_timeline(story)
-          # Package rule: ground top is y=0.8, so actors must spawn at y0=0.85.
-          for actor in story.get("actors", []):
-              actor.setdefault("y0", 0.85)
+          # This shipped example uses the "ground" plane at y=0 (not the "land" builder at y=0.8),
+          # so retain its default actor spawn height. Keep both walkers on the bridge deck, clear of the approach ramp.
+          for index, actor in enumerate(story.get("actors", [])):
+              actor.pop("y0", None)
+              keys = actor.get("keys", [])
+              if keys:
+                  keys[-1]["z"] = 7.0 if index == 0 else 6.0
           story["duration"] = 10
           output = Path("factory/render/story.10s.json")
           output.write_text(json.dumps(story, indent=2) + "\n", encoding="utf-8")
