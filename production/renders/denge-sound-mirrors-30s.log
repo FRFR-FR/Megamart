@@ -1,0 +1,33 @@
+Failed to load resource: the server responded with a status of 404 (Not Found)
+frame 0/900  0.51 s/frame
+frame 30/900  0.16 s/frame
+frame 60/900  0.15 s/frame
+frame 90/900  0.16 s/frame
+frame 120/900  0.17 s/frame
+frame 150/900  0.16 s/frame
+frame 180/900  0.16 s/frame
+frame 210/900  0.16 s/frame
+frame 240/900  0.15 s/frame
+frame 270/900  0.15 s/frame
+frame 300/900  0.14 s/frame
+frame 330/900  0.14 s/frame
+frame 360/900  0.15 s/frame
+frame 390/900  0.14 s/frame
+frame 420/900  0.14 s/frame
+frame 450/900  0.14 s/frame
+frame 480/900  0.14 s/frame
+frame 510/900  0.14 s/frame
+frame 540/900  0.14 s/frame
+frame 570/900  0.14 s/frame
+frame 600/900  0.14 s/frame
+frame 630/900  0.14 s/frame
+frame 660/900  0.14 s/frame
+frame 690/900  0.14 s/frame
+frame 720/900  0.14 s/frame
+frame 750/900  0.15 s/frame
+frame 780/900  0.15 s/frame
+frame 810/900  0.15 s/frame
+frame 840/900  0.14 s/frame
+frame 870/900  0.14 s/frame
+PHYSICS AUDIT {"steps":7192,"contacts":0,"maxPen":0,"over2cm":0,"fell":0,"worst":"","vis":0,"vis1cm":0,"camInside":0,"solverPreCm":0,"visiblePenCm":0,"nophys":false,"actorOverlap":0}
+done 900 frames in 128 s -> production/renders/denge-sound-mirrors-30s.mp4
