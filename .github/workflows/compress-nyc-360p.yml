@@ -1,6 +1,10 @@
 name: Create heavily compressed 360p NYC copy
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/compress-nyc-360p.yml"
   workflow_dispatch:
 
 permissions:
