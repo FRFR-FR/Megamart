@@ -1,0 +1,49 @@
+name: Create heavily compressed 360p NYC copy
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compress-nyc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify original is preserved
+        run: |
+          test -s production/renders/nyc-walkthrough-60s.mp4
+          ffprobe -v error -show_entries format=duration,size -of default=noprint_wrappers=1 production/renders/nyc-walkthrough-60s.mp4
+
+      - name: Create heavily compressed 360p MP4
+        run: |
+          mkdir -p production/renders/compressed
+          ffmpeg -y -i production/renders/nyc-walkthrough-60s.mp4             -vf "scale=-2:360:flags=lanczos,fps=30"             -c:v libx264 -preset veryfast -crf 30 -maxrate 450k -bufsize 900k             -c:a aac -b:a 48k -ac 2 -movflags +faststart             production/renders/compressed/nyc-walkthrough-60s-360p.mp4
+
+      - name: Create ZIP copy for lower download/storage overhead
+        run: |
+          cd production/renders/compressed
+          zip -9 nyc-walkthrough-60s-360p.zip nyc-walkthrough-60s-360p.mp4
+          ls -lh nyc-walkthrough-60s-360p.mp4 nyc-walkthrough-60s-360p.zip
+
+      - name: Verify compressed output
+        run: |
+          test -s production/renders/compressed/nyc-walkthrough-60s-360p.mp4
+          ffprobe -v error -show_entries stream=width,height,r_frame_rate,codec_name -show_entries format=duration,size -of default=noprint_wrappers=1 production/renders/compressed/nyc-walkthrough-60s-360p.mp4
+
+      - name: Upload compressed MP4
+        uses: actions/upload-artifact@v4
+        with:
+          name: nyc-walkthrough-60s-360p
+          path: production/renders/compressed/nyc-walkthrough-60s-360p.mp4
+          retention-days: 30
+
+      - name: Upload ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: nyc-walkthrough-60s-360p-zip
+          path: production/renders/compressed/nyc-walkthrough-60s-360p.zip
+          retention-days: 30
