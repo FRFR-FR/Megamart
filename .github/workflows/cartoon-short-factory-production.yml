@@ -23,7 +23,6 @@ on:
     branches: [main]
     paths:
       - "production/stories/**"
-      - ".github/workflows/cartoon-short-factory-production.yml"
 
 concurrency:
   group: cartoon-short-factory-production-main
@@ -83,7 +82,7 @@ jobs:
           stories=( $STORY_GLOB )
           if [ "${#stories[@]}" -eq 0 ]; then
             echo "No stories matched: $STORY_GLOB"
-            exit 1
+            exit 0
           fi
           mkdir -p production/renders
           for story in "${stories[@]}"; do
