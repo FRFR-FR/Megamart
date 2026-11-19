@@ -8,13 +8,17 @@ on:
       - .github/workflows/cartoon-short-factory.yml
   workflow_dispatch:
 
+concurrency:
+  group: cartoon-short-factory-main
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
 jobs:
   install-and-render:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -39,7 +43,6 @@ jobs:
           test -f SKILL.md
           test -f factory/render/package-lock.json
           test -f factory/render/story.example.json
-          echo "Extracted package files: $(find . -type f ! -path './.git/*' | wc -l)"
 
       - name: Commit the exact extracted package to main
         shell: bash
@@ -55,8 +58,26 @@ jobs:
             echo "Extracted package is already present; no source commit needed."
           fi
 
-      - name: Install only the locked renderer dependencies
+      - name: Install the locked renderer dependencies
         run: npm ci --prefix factory/render --no-audit --no-fund
+
+      - name: Install documented Python voice and sound dependencies
+        run: python -m pip install kokoro-onnx soundfile numpy
+
+      - name: Install Chromium and its required system libraries
+        shell: bash
+        run: |
+          set -euo pipefail
+          node factory/render/node_modules/playwright-core/cli.js install --with-deps chromium
+          CHROME_BIN="$(find "$HOME/.cache/ms-playwright" -type f -name chrome -perm -111 -print -quit)"
+          test -n "$CHROME_BIN"
+          sudo ln -sf "$CHROME_BIN" /usr/bin/google-chrome
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+          test -x /usr/bin/google-chrome
+          command -v ffmpeg
 
       - name: Validate packaged Python and JavaScript
         shell: bash
@@ -67,27 +88,46 @@ jobs:
           node --check factory/render/lib/characters.js
           node --check factory/render/lib/props.js
 
-      - name: Prepare a 10-second version of the package example
+      - name: Prepare a continuous 10-second version of the package example
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
           import json
           from pathlib import Path
+
           source = Path("factory/render/story.example.json")
           story = json.loads(source.read_text(encoding="utf-8"))
           if not isinstance(story, dict) or "duration" not in story:
               raise SystemExit("Package example does not expose the documented duration field")
+
+          original_duration = float(story["duration"])
+          if original_duration <= 0:
+              raise SystemExit("Package example duration must be positive")
+
+          factor = 10.0 / original_duration
+
+          def scale_timeline(value):
+              if isinstance(value, dict):
+                  for key, item in list(value.items()):
+                      if key in {"t", "a", "b", "at", "until"} and isinstance(item, (int, float)):
+                          value[key] = round(item * factor, 4)
+                      else:
+                          scale_timeline(item)
+              elif isinstance(value, list):
+                  for item in value:
+                      scale_timeline(item)
+
+          scale_timeline(story)
           story["duration"] = 10
-          Path("factory/render/story.10s.json").write_text(
-              json.dumps(story, indent=2) + "\n", encoding="utf-8"
-          )
-          print("10-second story prepared from the package's own example.")
+          output = Path("factory/render/story.10s.json")
+          output.write_text(json.dumps(story, indent=2) + "\n", encoding="utf-8")
+          print(f"Scaled the package's {original_duration:g}s example scene to 10s (factor {factor:.4f}).")
           PY
 
       - name: Render the 10-second animation
         working-directory: factory/render
-        run: node render.mjs story.10s.json cartoon-short-factory-10s.mp4
+        run: node render.mjs story.10s.json cartoon-short-factory-10s.mp4 --w 540 --h 960 --fps 30
 
       - name: Verify rendered duration and media stream
         working-directory: factory/render
@@ -96,6 +136,8 @@ jobs:
           set -euo pipefail
           test -s cartoon-short-factory-10s.mp4
           ffprobe -v error -show_entries format=duration:stream=codec_name,width,height,r_frame_rate -of json cartoon-short-factory-10s.mp4
+          DURATION="$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 cartoon-short-factory-10s.mp4)"
+          python -c 'import sys; d=float(sys.argv[1]); assert 9.9 <= d <= 10.1, f"Expected 10 seconds, got {d}"' "$DURATION"
 
       - name: Upload the rendered animation and its story
         uses: actions/upload-artifact@v4
