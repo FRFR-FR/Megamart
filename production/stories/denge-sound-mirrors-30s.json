@@ -1045,5 +1045,5 @@
     }
   ],
   "actorPhysics": "kinematic",
-  "physicsNote": "All actors use the repository's animation-driven kinematic mode; no renderer, camera, or character-library changes are required."
+  "physicsNote": "Five grounded characters use the repository's animation-driven kinematic mode; the documented native camera shot schema and character rig remain unchanged."
 }
