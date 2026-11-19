@@ -1,0 +1,120 @@
+name: Cartoon Short Factory — production queue
+
+on:
+  workflow_dispatch:
+    inputs:
+      story_glob:
+        description: "Story JSON glob under production/stories"
+        required: false
+        default: "production/stories/*.json"
+      width:
+        description: "Output width"
+        required: false
+        default: "540"
+      height:
+        description: "Output height"
+        required: false
+        default: "960"
+      fps:
+        description: "Frames per second"
+        required: false
+        default: "30"
+  push:
+    branches: [main]
+    paths:
+      - "production/stories/**"
+      - ".github/workflows/cartoon-short-factory-production.yml"
+
+concurrency:
+  group: cartoon-short-factory-production-main
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  render-queue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Verify the installed package
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f SKILL.md
+          test -f factory/render/package-lock.json
+          test -f factory/render/render.mjs
+          test "$(find . -type f -not -path "./.git/*" | wc -l)" -ge 120
+
+      - name: Install locked renderer dependencies
+        run: npm ci --prefix factory/render --no-audit --no-fund
+
+      - name: Install documented Chromium runtime and FFmpeg
+        shell: bash
+        run: |
+          set -euo pipefail
+          node factory/render/node_modules/playwright-core/cli.js install --with-deps chromium
+          CHROME_BIN="$(find "$HOME/.cache/ms-playwright" -type f -name chrome -perm -111 -print -quit)"
+          test -n "$CHROME_BIN"
+          sudo ln -sf "$CHROME_BIN" /usr/bin/google-chrome
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+
+      - name: Render every queued story
+        shell: bash
+        env:
+          STORY_GLOB: ${{ inputs.story_glob || 'production/stories/*.json' }}
+          WIDTH: ${{ inputs.width || '540' }}
+          HEIGHT: ${{ inputs.height || '960' }}
+          FPS: ${{ inputs.fps || '30' }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          stories=( $STORY_GLOB )
+          if [ "${#stories[@]}" -eq 0 ]; then
+            echo "No stories matched: $STORY_GLOB"
+            exit 1
+          fi
+          mkdir -p production/renders
+          for story in "${stories[@]}"; do
+            base="$(basename "$story" .json)"
+            out="production/renders/$base.mp4"
+            echo "Rendering $story -> $out"
+            node factory/render/render.mjs "$story" "$out" --w "$WIDTH" --h "$HEIGHT" --fps "$FPS" 2>&1 | tee "production/renders/$base.log"
+            test -s "$out"
+            grep -F "PHYSICS AUDIT" "production/renders/$base.log"
+          done
+
+      - name: Verify all production outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          for video in production/renders/*.mp4; do
+            ffprobe -v error -show_entries format=duration:stream=codec_type,codec_name,width,height,r_frame_rate -of json "$video" > "$video.probe.json"
+            test -s "$video.probe.json"
+          done
+
+      - name: Commit rendered production outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add production/renders
+          if ! git diff --cached --quiet; then
+            git commit -m "Render Cartoon Short Factory production queue"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          else
+            echo "No new production outputs to commit."
+          fi
