@@ -3926,5 +3926,7 @@
     }
   ],
   "swayMax": 0,
-  "dampersAt": 999
+  "dampersAt": 999,
+  "actorPhysics": "kinematic",
+  "physicsNote": "Crowd actors are animation-driven and intentionally non-colliding with city props; this prevents crowd/prop physics explosions while preserving grounded visual motion."
 }

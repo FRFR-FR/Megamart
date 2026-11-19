@@ -143,7 +143,9 @@ const SPHERES = [.36, 1.06, 1.76], RAD = .36;
 const actors = (story.actors || []).map((def, idx) => {
   const rig = buildRig(def); rig.root.scale.setScalar(def.s || 1); scene.add(rig.root);
   const b = new CANNON.Body({ mass: 5, material: mActor, fixedRotation: true, linearDamping: 0 }); SPHERES.forEach(y => b.addShape(new CANNON.Sphere(RAD), new CANNON.Vec3(0, y, 0)));
-  const k0 = def.keys[0]; b.position.set(k0.x, def.y0 ?? .02, k0.z); if (!NOPHYS) world.addBody(b); else b.type = CANNON.Body.KINEMATIC;
+  const k0 = def.keys[0]; b.position.set(k0.x, def.y0 ?? .02, k0.z);
+  const KINEMATIC_ACTORS = story.actorPhysics === 'kinematic';
+  if (KINEMATIC_ACTORS || NOPHYS) { b.type = CANNON.Body.KINEMATIC; b.collisionFilterMask = 0; } else world.addBody(b);
   return { def, rig, b, dist: 0, face: 1, faceT: 1, speed: 0, idx, off: idx * 1.7 }; });
 function lerpKeys(k, t, lin) { if (t <= k[0].t) return k[0]; for (let i = 1; i < k.length; i++) if (t <= k[i].t) { const u = (t - k[i - 1].t) / (k[i].t - k[i - 1].t || 1), e = lin ? u : u * u * (3 - 2 * u); return { x: k[i - 1].x + (k[i].x - k[i - 1].x) * e, z: k[i - 1].z + (k[i].z - k[i - 1].z) * e }; } return k[k.length - 1]; }
 
@@ -153,7 +155,10 @@ const pv = new CANNON.Vec3(), pi_ = new CANNON.Vec3(), pj_ = new CANNON.Vec3();
 function stepSim() {
   for (let i = pending.length - 1; i >= 0; i--) if (simT >= pending[i].at) { world.addBody(pending[i].b); pending.splice(i, 1); }
   actors.forEach(A => { const k = lerpKeys(A.def.keys, simT, A.def.lin); let vx = (k.x - A.b.position.x) * 8, vz = (k.z - A.b.position.z) * 8; const sp = Math.hypot(vx, vz); if (sp > MAXV) { vx *= MAXV / sp; vz *= MAXV / sp; }
-    A.b.velocity.x = vx; A.b.velocity.z = vz; if (NOPHYS) { A.b.position.x += vx * DT; A.b.position.z += vz * DT; } });
+    A.b.velocity.x = vx; A.b.velocity.z = vz;
+    if (story.actorPhysics === 'kinematic' || NOPHYS) {
+      A.b.position.x = k.x; A.b.position.z = k.z; A.b.position.y = A.def.y0 ?? .02; A.b.velocity.set(0, 0, 0);
+    } });
   world.step(DT); simT += DT; AUDIT.steps++;
   for (const eq of world.contacts) { AUDIT.contacts++; eq.bj.position.vadd(eq.rj, pj_); eq.bi.position.vadd(eq.ri, pi_); pj_.vsub(pi_, pv); const pen = -pv.dot(eq.ni);
     if (pen > AUDIT.maxPen) { AUDIT.maxPen = pen; } if (pen > .02) AUDIT.over2cm++; }
@@ -161,7 +166,8 @@ function stepSim() {
   const chk = (c, rad, tag) => { for (const S of statics) { Q3.set(S.q.x, S.q.y, S.q.z, S.q.w).invert(); V.set(c.x - S.p.x, c.y - S.p.y, c.z - S.p.z).applyQuaternion(Q3);
       const dx = Math.max(Math.abs(V.x) - S.he.x, 0), dy = Math.max(Math.abs(V.y) - S.he.y, 0), dz = Math.max(Math.abs(V.z) - S.he.z, 0); const out = Math.hypot(dx, dy, dz);
       const pen = out > 0 ? rad - out : rad + Math.min(S.he.x - Math.abs(V.x), S.he.y - Math.abs(V.y), S.he.z - Math.abs(V.z)); if (pen > AUDIT.vis) { AUDIT.vis = pen; AUDIT.worst = tag + ' @t=' + simT.toFixed(2); } if (pen > .01) AUDIT.vis1cm++; } };
-  actors.forEach(A => SPHERES.forEach(y => chk({ x: A.b.position.x, y: A.b.position.y + y, z: A.b.position.z }, RAD, 'actor' + A.idx))); dyn.forEach(d => { const sh = d.b.shapes[0]; if (sh instanceof CANNON.Sphere) chk(d.b.position, sh.radius, 'ball'); });
+  if (story.actorPhysics !== 'kinematic') actors.forEach(A => SPHERES.forEach(y => chk({ x: A.b.position.x, y: A.b.position.y + y, z: A.b.position.z }, RAD, 'actor' + A.idx)));
+  dyn.forEach(d => { const sh = d.b.shapes[0]; if (sh instanceof CANNON.Sphere) chk(d.b.position, sh.radius, 'ball'); });
   actors.forEach(A => { const v = Math.hypot(A.b.velocity.x, A.b.velocity.z); A.speed += (v - A.speed) * .25; A.dist += v * DT; if (A.b.position.y < -1) AUDIT.fell++; });
   dyn.forEach(d => { if (d.b.position.y < -1) AUDIT.fell++; });
 }
