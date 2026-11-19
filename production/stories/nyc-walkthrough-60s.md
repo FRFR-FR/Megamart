@@ -1,5 +1,5 @@
 # "NYC: The City That Never Walks in a Straight Line"
-Format: 60-second vertical city-walk short, one steady British male narrator, original story and characters, wide environment-first framing.
+Format: 60-second vertical NYC story short, one steady British male narrator, front-facing crowd opening followed by wide, scene-specific city coverage; keep people prominent while revealing the real city environment.
 Facts: Manhattan's 1811 Commissioners' Plan established a regular street grid but preserved Broadway's older diagonal route; Times Square grew around Broadway and Seventh Avenue. (NYC Municipal Archives, Randel's 1811 Manhattan street map; NYC Landmarks Preservation Commission, Broadway and the Manhattan street grid)
 
 Manhattan's street grid was drawn in eighteen eleven, but Broadway still cuts across it.
