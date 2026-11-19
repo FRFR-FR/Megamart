@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   compress-nyc:
@@ -37,6 +37,14 @@ jobs:
         run: |
           test -s production/renders/compressed/nyc-walkthrough-60s-360p.mp4
           ffprobe -v error -show_entries stream=width,height,r_frame_rate,codec_name -show_entries format=duration,size -of default=noprint_wrappers=1 production/renders/compressed/nyc-walkthrough-60s-360p.mp4
+
+      - name: Commit compressed copies without touching the original
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add production/renders/compressed/nyc-walkthrough-60s-360p.mp4 production/renders/compressed/nyc-walkthrough-60s-360p.zip
+          git diff --cached --quiet || git commit -m "Add compressed 360p NYC video copies"
+          git push
 
       - name: Upload compressed MP4
         uses: actions/upload-artifact@v4
