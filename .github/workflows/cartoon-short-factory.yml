@@ -127,6 +127,20 @@ jobs:
               if keys:
                   keys[0]["z"] = -12.5 if index == 0 else -15.0
                   keys[-1]["z"] = 7.0 if index == 0 else 6.0
+
+          # Keep the bouncing ball clear of the bridge deck collider.
+          for prop in story.get("world", []):
+              if prop.get("type") == "ball":
+                  prop["x"] = 2.4
+
+          # Keep cameras outside the nearby tree/house blocker boxes while staying >5m from actors.
+          shots = story.get("shots", [])
+          if len(shots) >= 2:
+              shots[0]["from"] = [4.2, 2.4, 2.5]
+              shots[0]["to"] = [4.4, 2.2, 2.2]
+              shots[1]["from"] = [-4.0, 2.5, 2.7]
+              shots[1]["to"] = [-4.0, 2.3, 2.7]
+
           story["duration"] = 10
           output = Path("factory/render/story.10s.json")
           output.write_text(json.dumps(story, indent=2) + "\n", encoding="utf-8")
