@@ -1,0 +1,219 @@
+<!doctype html><meta charset="utf-8"><style>html,body{margin:0;background:#000}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","cannon-es":"/node_modules/cannon-es/dist/cannon-es.js"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import * as CANNON from 'cannon-es';
+import { makeKit } from '/lib/characters.js';
+import { makeProps } from '/lib/props.js';
+const Q = new URLSearchParams(location.search);
+const W = +Q.get('w') || 540, H = +Q.get('h') || 960;
+const NOPHYS = Q.get('nophys') === '1';           // negative control: actors ignore all colliders
+const story = await (await fetch('/story.json')).json();
+const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+r.setSize(W, H); r.setPixelRatio(1); r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
+r.toneMapping = THREE.NeutralToneMapping; document.body.appendChild(r.domElement);
+const scene = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(38, W / H, 0.1, 400);
+const INK = 0x070608, PLUM = '#241a2c';
+
+/* ================= PHYSICS WORLD =================
+   Every visible prop registers a matching collider, so what you see is what collides.
+   Fixed 1/120 s step, deterministic, stepped from t=0 up to the requested frame time. */
+const world = new CANNON.World({ gravity: new CANNON.Vec3(0, -24, 0) });
+world.solver.iterations = 20; world.allowSleep = false;
+const mStatic = new CANNON.Material('static'), mActor = new CANNON.Material('actor'), mProp = new CANNON.Material('prop');
+const cm = (a, b, f, e) => world.addContactMaterial(new CANNON.ContactMaterial(a, b, { friction: f, restitution: e, contactEquationStiffness: 1e8, contactEquationRelaxation: 3 }));
+cm(mActor, mStatic, 0, 0); cm(mActor, mProp, 0, 0); cm(mActor, mActor, 0, 0); cm(mProp, mStatic, .5, .25); cm(mProp, mProp, .5, .2);
+const ground = new CANNON.Body({ mass: 0, material: mStatic }); ground.addShape(new CANNON.Plane()); ground.quaternion.setFromEuler(-Math.PI / 2, 0, 0); world.addBody(ground);
+const dyn = [], statics = [], blockers = [], pending = [], swayGroups = [], dampers = [], movers = [], flags = [];
+let swayL = 0, swayW = 3.4, swayTop = .8; const SWAYF = .9;                                    // dynamic props: mesh <-> body
+const AUDIT = { steps: 0, contacts: 0, maxPen: 0, over2cm: 0, fell: 0, worst: '', vis: 0, vis1cm: 0, camInside: 0 };
+
+/* ================= LOOK ================= */
+const LOOK = {
+  day:    { top: '#5e93d9', hor: '#9cc4f0', sun: 0xfff1d6, sunI: 2.4, hemiS: 0xcfe0ff, hemiG: 0x9aa878, hemiI: 1.7, fog: 0x9cc4f0 },
+  golden: { top: '#6a5fb8', hor: '#ffd08a', sun: 0xffb36b, sunI: 2.6, hemiS: 0xa79ff0, hemiG: 0x7c6a9a, hemiI: 1.4, fog: 0xffd08a },
+};
+function skyTex(a, b) { const c = document.createElement('canvas'); c.width = 4; c.height = 256; const g = c.getContext('2d');
+  const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, a); gr.addColorStop(.62, b); gr.addColorStop(1, b);
+  g.fillStyle = gr; g.fillRect(0, 0, 4, 256); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; }
+const sun = new THREE.DirectionalLight(0xffffff, 2); sun.position.set(-18, 30, 14); sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -40, right: 40, top: 40, bottom: -40, near: 1, far: 120 }); sun.shadow.bias = -0.0005;
+const hemi = new THREE.HemisphereLight(0xffffff, 0x888888, 1); scene.add(sun, hemi);
+let curLook = '';
+function setLook(k) { if (k === curLook) return; curLook = k; const L = LOOK[k] || LOOK.day; scene.background = skyTex(L.top, L.hor); scene.fog = new THREE.Fog(L.fog, 90, 300);
+  sun.color.setHex(L.sun); sun.intensity = L.sunI; hemi.color.setHex(L.hemiS); hemi.groundColor.setHex(L.hemiG); hemi.intensity = L.hemiI; }
+
+/* ================= INK (inverted hull, thickness in WORLD units; call after scaling the mesh) ================= */
+const inkMat = new THREE.MeshBasicMaterial({ color: INK, side: THREE.BackSide });
+function inked(mesh, w = .05) { const g = mesh.geometry; g.computeBoundingBox(); const sz = new THREE.Vector3(); g.boundingBox.getSize(sz);
+  const sc = mesh.scale; const h = new THREE.Mesh(g, inkMat);
+  h.scale.set(1 + w / Math.max(sz.x * Math.abs(sc.x), .05), 1 + w / Math.max(sz.y * Math.abs(sc.y), .05), 1 + w / Math.max(sz.z * Math.abs(sc.z), .05)); mesh.add(h); return mesh; }
+const mats = {}; const mat = c => mats[c] ||= new THREE.MeshStandardMaterial({ color: c, roughness: .85, metalness: 0 });
+
+/* ================= WORLD PROPS (visual + collider from the same numbers) ================= */
+function addBody(o, shape, pos, rx = 0) {
+  const b = new CANNON.Body({ mass: o.mass || 0, material: o.mass ? mProp : mStatic }); b.addShape(shape); b.position.set(pos.x, pos.y, pos.z); b.quaternion.setFromEuler(rx, 0, 0);
+  if (!o.mass && shape instanceof CANNON.Box) statics.push({ he: shape.halfExtents.clone(), p: b.position, q: b.quaternion });
+  if (o.mass) { b.linearDamping = .05; b.angularDamping = .15; if (o.vel) b.velocity.set(...o.vel); } if (o.at) pending.push({ at: o.at, b }); else world.addBody(b); return b; }
+function box(w, h, d, c, x, y, z, o = {}) {              // y = base height
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat(c)); m.position.set(x, y + h / 2, z); m.rotation.x = o.rx || 0; m.castShadow = m.receiveShadow = true; if (o.ink !== false) inked(m, o.inkW || .06); scene.add(m);
+  if (o.collide !== false && !o.mass) blockers.push(new THREE.Box3().setFromObject(m));
+  if (o.collide !== false) { const b = addBody(o, new CANNON.Box(new CANNON.Vec3(w / 2, h / 2, d / 2)), m.position, o.rx || 0); if (o.mass) dyn.push({ m, b, at: o.at }); }
+  return m; }
+function wall(w, h, d, x, y, z) { addBody({}, new CANNON.Box(new CANNON.Vec3(w / 2, h / 2, d / 2)), { x, y: y + h / 2, z }); }   // invisible collider
+function cone(rad, h, c, x, y, z) { const m = new THREE.Mesh(new THREE.ConeGeometry(rad, h, 4), mat(c)); m.position.set(x, y + h / 2, z); m.rotation.y = Math.PI / 4; m.castShadow = true; inked(m, .06); scene.add(m); }
+const B = {
+  ground: p => { const m = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), mat(p.color || 0x7fc24f)); m.rotation.x = -Math.PI / 2; m.receiveShadow = true; scene.add(m); },
+  river:  p => { const m = new THREE.Mesh(new THREE.PlaneGeometry(p.w || 14, 400), new THREE.MeshStandardMaterial({ color: p.color || 0x3f9fe0, roughness: .25 })); m.rotation.x = -Math.PI / 2; m.position.set(p.x || 0, .03, 0); scene.add(m); },
+  road:   p => { const m = new THREE.Mesh(new THREE.PlaneGeometry(p.w || 3, p.len || 60), mat(p.color || 0xcdb38a)); m.rotation.x = -Math.PI / 2; m.position.set(p.x || 0, .02, p.z || 0); m.receiveShadow = true; scene.add(m); },
+  house:  p => { const w = p.w || 4, h = p.h || 3, d = p.d || 4; box(w, h, d, p.color || 0xf0c27a, p.x, 0, p.z); cone(Math.max(w, d) * .78, p.roof || 2.2, p.roofColor || 0xd9534f, p.x, h, p.z); },
+  tree:   p => { box(.5, 1.7, .5, 0x8a5a33, p.x, p.y ?? 0, p.z, { inkW: .05 }); const s = p.s || 1, m = new THREE.Mesh(new THREE.IcosahedronGeometry(1.4 * s, 1), mat(p.color || 0x3ea84a)); m.position.set(p.x, (p.y ?? 0) + 2.9 * s, p.z); m.castShadow = true; inked(m, .06); scene.add(m); blockers.push(new THREE.Box3().setFromObject(m)); },
+  box:    p => box(p.w, p.h, p.d, p.color || 0xcccccc, p.x, p.y || 0, p.z, p),
+  crate:  p => box(p.s || 1, p.s || 1, p.s || 1, p.color || 0xc98a4b, p.x, p.y || 0, p.z, { mass: p.mass || 2, vel: p.vel, at: p.at }),
+  ball:   p => { const rad = p.r || .45, m = new THREE.Mesh(new THREE.SphereGeometry(rad, 24, 16), mat(p.color || 0xe0453a)); m.position.set(p.x, p.y || rad, p.z); m.castShadow = true; inked(m, .05); scene.add(m);
+    const b = addBody({ mass: p.mass || 1, vel: p.vel }, new CANNON.Sphere(rad), m.position); dyn.push({ m, b }); },
+  bridge: p => { const L = p.len || 16, w = p.w || 3, x = p.x || 0, z = p.z || 0, top = p.y ?? .55, c = p.color || 0xcfc6b0, ramp = p.ramp || 3.2, th = .35;
+    box(w, th, L, c, x, top - th, z);                                           // deck
+    [-1, 1].forEach(s => { box(1, top - th, 1, 0x8d8576, x + s * (w / 2 - .6), 0, z + s * (L / 2 - 1), { collide: false });  // piers
+      const a = Math.atan2(top, ramp), len = Math.hypot(ramp, top);               // approach ramps (physical slopes)
+      box(w, .3, len, c, x, top / 2 - .15 * Math.cos(a) - .15, z + s * (L / 2 + ramp / 2), { rx: s * a });
+      box(.16, .9, .16, c, x - w / 2 + .1, top, z + s * (L / 2) , { collide: false }); });
+    [-1, 1].forEach(s => { for (let i = -L / 2; i <= L / 2 + .01; i += 2) box(.18, 1, .18, c, x + s * (w / 2 - .1), top, z + i, { collide: false });
+      box(.14, .14, L, c, x + s * (w / 2 - .1), top + 1, z, { collide: false });
+      wall(.2, 1.6, L, x + s * (w / 2 - .1), top, z); });                       // side parapet collider: nobody falls off or walks through the rails
+  },
+};
+
+const rnd = (() => { let s = 12345; return () => (s = (s * 16807) % 2147483647) / 2147483647; })();
+const part = (g, geo, color, x, y, z, o = {}) => { const m = new THREE.Mesh(geo, mat(color)); m.position.set(x, y, z); if (o.s) m.scale.set(...o.s); if (o.rx) m.rotation.x = o.rx; m.castShadow = o.shadow !== false; m.receiveShadow = true; if (o.ink !== false) inked(m, o.w || .08); g.add(m); return m; };
+const NEWB = {
+  land: p => box(p.x1 - p.x0, p.top ?? .8, p.z1 - p.z0, p.color || 0xb4ad9f, (p.x0 + p.x1) / 2, 0, (p.z0 + p.z1) / 2, { ink: false }),
+  pave: p => { const m = new THREE.Mesh(new THREE.PlaneGeometry(p.x1 - p.x0, p.z1 - p.z0), mat(p.color)); m.rotation.x = -Math.PI / 2; m.position.set((p.x0 + p.x1) / 2, p.y ?? .805, (p.z0 + p.z1) / 2); m.receiveShadow = true; scene.add(m); },
+  riverx: p => { const m = new THREE.Mesh(new THREE.PlaneGeometry(400, p.w), new THREE.MeshStandardMaterial({ color: p.color || 0x3a8fc4, roughness: .2 })); m.rotation.x = -Math.PI / 2; m.position.set(0, p.y ?? .3, p.z || 0); m.receiveShadow = true; scene.add(m); },
+  swayBridge: p => { const L = p.len || 18, w = p.w || 3.4, top = p.y ?? .8, N = p.n || 12, seg = L / N, th = .3, c = p.color || 0xd8d2c4, steel = 0x9aa3ad; swayL = L; swayW = w; swayTop = top;
+    wall(w, th, L, 0, top - th, 0); [-1, 1].forEach(s => wall(.2, 1.4, L, s * (w / 2 - .1), top, 0));       // colliders: deck + parapets (nominal position)
+    for (let i = 0; i < N; i++) { const zc = -L / 2 + seg * (i + .5), g = new THREE.Group(); g.position.set(0, 0, zc); scene.add(g); swayGroups.push({ g, zc });
+      part(g, new THREE.BoxGeometry(w, th, seg * .985), c, 0, top + .01 - th / 2, 0, { w: .05 });
+      [-1, 1].forEach(s => { part(g, new THREE.BoxGeometry(.1, .1, seg * .985), steel, s * (w / 2 - .1), top + 1, 0, { w: .04 }); part(g, new THREE.BoxGeometry(.12, 1, .12), steel, s * (w / 2 - .1), top + .5, 0, { w: .03 });
+        const u = zc / (L / 2), cy = top - .35 + .75 * u * u; part(g, new THREE.BoxGeometry(.14, .14, seg * 1.03), 0x59626c, s * (w / 2 + .55), cy, 0, { w: .04 }); part(g, new THREE.BoxGeometry(.55, .07, .07), 0x59626c, s * (w / 2 + .25), cy, 0, { ink: false });
+        const d = part(g, new THREE.CylinderGeometry(.15, .15, .95, 10), 0xe8832a, s * (w / 2 + .3), top + .15, seg * .3, { w: .04 }); d.visible = false; dampers.push({ m: d, i: dampers.length }); }); } },
+  stpauls: p => { const g = new THREE.Group(); g.position.set(p.x, .8, p.z); g.scale.setScalar(p.s || 1); scene.add(g); const cream = 0xe9e2d0, lead = 0x8f9fb4, gold = 0xe0b040;
+    part(g, new THREE.BoxGeometry(30, 14, 18), cream, 0, 7, 0, { w: .3 }); part(g, new THREE.BoxGeometry(14, 9, 4), cream, 0, 4.5, -10, { w: .3 });
+    [-9, 9].forEach(x => { part(g, new THREE.BoxGeometry(5, 22, 5), cream, x, 11, -7, { w: .3 }); part(g, new THREE.SphereGeometry(2.2, 16, 10, 0, 6.2832, 0, 1.5708), lead, x, 22, -7, { w: .2 }); });
+    part(g, new THREE.CylinderGeometry(6.5, 6.8, 6, 24), cream, 0, 17, 0, { w: .3 }); part(g, new THREE.SphereGeometry(7, 28, 14, 0, 6.2832, 0, 1.5708), lead, 0, 20, 0, { w: .3, s: [1, 1.1, 1] });
+    part(g, new THREE.CylinderGeometry(1.2, 1.5, 4, 12), cream, 0, 29.7, 0, { w: .2 }); part(g, new THREE.SphereGeometry(.9, 12, 10), gold, 0, 32.6, 0, { w: .12 }); part(g, new THREE.BoxGeometry(.25, 2, .25), gold, 0, 34, 0, { ink: false }); part(g, new THREE.BoxGeometry(1.2, .25, .25), gold, 0, 34.2, 0, { ink: false });
+    for (let i = -5; i <= 5; i++) part(g, new THREE.CylinderGeometry(.25, .25, 7, 8), 0xf4efe2, i * 1.1, 3.5, -12.3, { ink: false }); },
+  tate: p => { const g = new THREE.Group(); g.position.set(p.x, .8, p.z); scene.add(g);
+    part(g, new THREE.BoxGeometry(40, 12, 14), 0x84503c, 0, 6, 0, { w: .3 }); part(g, new THREE.BoxGeometry(4.2, 30, 4.2), 0x7b4636, 2, 15, 0, { w: .3 }); part(g, new THREE.BoxGeometry(4.6, 3.4, 4.6), 0xf0e8d2, 2, 29, 0, { w: .25 });
+    for (let i = -8; i <= 8; i++) part(g, new THREE.BoxGeometry(1.5, 5, .2), 0x24323f, i * 2.3, 6.5, 7.05, { ink: false }); part(g, new THREE.BoxGeometry(40.4, .5, 14.4), 0x5c3a2f, 0, 12.2, 0, { w: .1 }); },
+  terrace: p => { const cols = [0x9b5b45, 0xe5d9bd, 0xc2866c, 0xd7d2c2, 0x8f5a48]; for (let k = 0; k < p.n; k++) { const h = 7 + Math.floor(rnd() * 4), w = p.w || 3.6, g = new THREE.Group(); g.position.set(p.x + k * w, .8, p.z); scene.add(g);
+      part(g, new THREE.BoxGeometry(w - .06, h, 6), cols[(rnd() * cols.length) | 0], 0, h / 2, 0, { w: .1 }); part(g, new THREE.BoxGeometry(w * .7, .5, 6.4), 0x4a4a55, 0, h + .25, 0, { w: .06 });
+      part(g, new THREE.CylinderGeometry(.18, .22, .9, 8), 0xb06a4c, w * .25, h + .9, 0, { ink: false });
+      [-1, 1].forEach(sz => { [0, 1, 2].forEach(r => [-.8, .8].forEach(dx => part(g, new THREE.BoxGeometry(.8, 1.2, .12), 0x2a3340, dx, 2.8 + r * 2.1, sz * 3.04, { ink: false }))); part(g, new THREE.BoxGeometry(.9, 1.8, .14), 0xa8302a, 0, .9, sz * 3.04, { ink: false }); }); } },
+  phonebox: p => { box(.95, 2.5, .95, 0xd32a2a, p.x, .8, p.z); [[0, .49], [0, -.49], [.49, 0], [-.49, 0]].forEach(([dx, dz]) => { const m = new THREE.Mesh(new THREE.BoxGeometry(dx ? .04 : .6, 1.2, dz ? .04 : .6), mat(0x2a3a4a)); m.position.set(p.x + dx, .8 + 1.5, p.z + dz); scene.add(m); }); box(1.05, .2, 1.05, 0xb91f1f, p.x, .8 + 2.5, p.z, { collide: false }); },
+  pillarbox: p => { box(.8, 1.5, .8, 0xd32a2a, p.x, .8, p.z); box(.95, .2, .95, 0xb91f1f, p.x, .8 + 1.5, p.z, { collide: false }); },
+  lamp: p => { box(.3, 4.6, .3, 0x25252c, p.x, .8, p.z, { inkW: .04 }); const m = new THREE.Mesh(new THREE.BoxGeometry(.7, .6, .7), new THREE.MeshStandardMaterial({ color: 0xfff1c0, emissive: 0xffe9a8, emissiveIntensity: .6 })); m.position.set(p.x, .8 + 5, p.z); inked(m, .05); scene.add(m); },
+  flag: p => { const g = new THREE.Group(); g.position.set(p.x, .8, p.z); scene.add(g); part(g, new THREE.CylinderGeometry(.07, .09, 7, 8), 0xdedede, 0, 3.5, 0, { w: .05 });
+    const c = document.createElement('canvas'); c.width = 240; c.height = 120; const x = c.getContext('2d'); x.fillStyle = '#012169'; x.fillRect(0, 0, 240, 120);
+    x.strokeStyle = '#fff'; x.lineWidth = 24; x.beginPath(); x.moveTo(0, 0); x.lineTo(240, 120); x.moveTo(240, 0); x.lineTo(0, 120); x.stroke(); x.strokeStyle = '#C8102E'; x.lineWidth = 8; x.stroke();
+    x.strokeStyle = '#fff'; x.lineWidth = 40; x.beginPath(); x.moveTo(120, 0); x.lineTo(120, 120); x.moveTo(0, 60); x.lineTo(240, 60); x.stroke(); x.strokeStyle = '#C8102E'; x.lineWidth = 24; x.stroke();
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; const f = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 1.1), new THREE.MeshBasicMaterial({ map: t, side: THREE.DoubleSide })); f.position.set(1.2, 6.3, 0); const pv = new THREE.Group(); pv.position.set(0, 0, 0); pv.add(f); g.add(pv); flags.push({ m: pv, ph: p.x + p.z }); },
+  cloud: p => { const g = new THREE.Group(); g.position.set(p.x, p.y, p.z); const s = p.s || 1, m = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, emissive: 0xdfe8f5, emissiveIntensity: .55 });
+    [[0, 0, 0, 5], [5, -.5, .5, 4], [-5, -.8, 0, 3.8], [2, 2, 0, 3.6], [-2, 1.6, 0, 3.2]].forEach(([x, y, z, r]) => { const q = new THREE.Mesh(new THREE.SphereGeometry(r * s, 16, 12), m); q.position.set(x * s, y * s, z); q.scale.y = .62; g.add(q); }); scene.add(g); },
+  bus: p => { const g = new THREE.Group(); scene.add(g); const red = 0xd32a2a;
+    part(g, new THREE.BoxGeometry(6.4, .2, 2.8), red, 0, .62, 0, { w: .07 });
+    [-1, 1].forEach(sz => [-2.1, 2.1].forEach(sx => part(g, new THREE.CylinderGeometry(.55, .55, .35, 16), 0x20202a, sx, .55, sz * 1.25, { rx: Math.PI / 2, w: .06 })));
+    [-1, 1].forEach(sz => part(g, new THREE.BoxGeometry(6.4, .75, .12), red, 0, 1.1, sz * 1.34, { w: .06 }));
+    [-3.15, 3.15].forEach(x => part(g, new THREE.BoxGeometry(.14, 2.8, 2.8), red, x, 2.12, 0, { w: .06 })); part(g, new THREE.BoxGeometry(6.6, .22, 3.0), red, 0, 3.62, 0, { w: .07 });
+    [[-3, -1.3], [-3, 1.3], [3, -1.3], [3, 1.3]].forEach(([x, z]) => part(g, new THREE.BoxGeometry(.14, 2.8, .14), red, x, 2.12, z, { w: .05 })); [-1.1, 1.1].forEach(x => part(g, new THREE.CylinderGeometry(.05, .05, 2.8, 8), 0xe5c63a, x, 2.12, .3, { w: .03 }));
+    movers.push({ g, keys: p.keys, y: .8 }); },
+};
+Object.assign(B, NEWB);
+const timed = [], tilts = []; Object.assign(B, makeProps({ THREE, scene, mat, inked, wall, movers, flags, rnd, timed, tilts }));
+(story.world || []).forEach(p => { const n0 = scene.children.length; B[p.type]?.(p); if (p.at != null || p.until != null) for (let i = n0; i < scene.children.length; i++) timed.push({ g: scene.children[i], at: p.at ?? -1, until: p.until ?? 1e9 }); });
+
+/* ================= RIG: articulated flat-card character =================
+   root(yaw faces camera, scale.x flips to travel direction)
+    └ pelvis ─ torso ─ head(face decal, hat) ; shoulders -> upper arm -> forearm -> hand dot ; hips -> thigh -> shin -> shoe
+   Legs are solved with 2-bone IK against planted feet; arms swing opposite the legs; torso leans into speed. */
+const KIT = makeKit({ THREE, mat, inked, PLUM }); const LEN = KIT.LEN; const buildRig = KIT.build;
+
+const SPHERES = [.36, 1.06, 1.76], RAD = .36;
+const actors = (story.actors || []).map((def, idx) => {
+  const rig = buildRig(def); rig.root.scale.setScalar(def.s || 1); scene.add(rig.root);
+  const b = new CANNON.Body({ mass: 5, material: mActor, fixedRotation: true, linearDamping: 0 }); SPHERES.forEach(y => b.addShape(new CANNON.Sphere(RAD), new CANNON.Vec3(0, y, 0)));
+  const k0 = def.keys[0]; b.position.set(k0.x, def.y0 ?? .02, k0.z); if (!NOPHYS) world.addBody(b); else b.type = CANNON.Body.KINEMATIC;
+  return { def, rig, b, dist: 0, face: 1, faceT: 1, speed: 0, idx, off: idx * 1.7 }; });
+function lerpKeys(k, t, lin) { if (t <= k[0].t) return k[0]; for (let i = 1; i < k.length; i++) if (t <= k[i].t) { const u = (t - k[i - 1].t) / (k[i].t - k[i - 1].t || 1), e = lin ? u : u * u * (3 - 2 * u); return { x: k[i - 1].x + (k[i].x - k[i - 1].x) * e, z: k[i - 1].z + (k[i].z - k[i - 1].z) * e }; } return k[k.length - 1]; }
+
+/* ================= SIM ================= */
+const DT = 1 / 240; let simT = 0; const MAXV = 6.5;
+const pv = new CANNON.Vec3(), pi_ = new CANNON.Vec3(), pj_ = new CANNON.Vec3();
+function stepSim() {
+  for (let i = pending.length - 1; i >= 0; i--) if (simT >= pending[i].at) { world.addBody(pending[i].b); pending.splice(i, 1); }
+  actors.forEach(A => { const k = lerpKeys(A.def.keys, simT, A.def.lin); let vx = (k.x - A.b.position.x) * 8, vz = (k.z - A.b.position.z) * 8; const sp = Math.hypot(vx, vz); if (sp > MAXV) { vx *= MAXV / sp; vz *= MAXV / sp; }
+    A.b.velocity.x = vx; A.b.velocity.z = vz; if (NOPHYS) { A.b.position.x += vx * DT; A.b.position.z += vz * DT; } });
+  world.step(DT); simT += DT; AUDIT.steps++;
+  for (const eq of world.contacts) { AUDIT.contacts++; eq.bj.position.vadd(eq.rj, pj_); eq.bi.position.vadd(eq.ri, pi_); pj_.vsub(pi_, pv); const pen = -pv.dot(eq.ni);
+    if (pen > AUDIT.maxPen) { AUDIT.maxPen = pen; } if (pen > .02) AUDIT.over2cm++; }
+  const Q3 = new THREE.Quaternion(), V = new THREE.Vector3();
+  const chk = (c, rad, tag) => { for (const S of statics) { Q3.set(S.q.x, S.q.y, S.q.z, S.q.w).invert(); V.set(c.x - S.p.x, c.y - S.p.y, c.z - S.p.z).applyQuaternion(Q3);
+      const dx = Math.max(Math.abs(V.x) - S.he.x, 0), dy = Math.max(Math.abs(V.y) - S.he.y, 0), dz = Math.max(Math.abs(V.z) - S.he.z, 0); const out = Math.hypot(dx, dy, dz);
+      const pen = out > 0 ? rad - out : rad + Math.min(S.he.x - Math.abs(V.x), S.he.y - Math.abs(V.y), S.he.z - Math.abs(V.z)); if (pen > AUDIT.vis) { AUDIT.vis = pen; AUDIT.worst = tag + ' @t=' + simT.toFixed(2); } if (pen > .01) AUDIT.vis1cm++; } };
+  actors.forEach(A => SPHERES.forEach(y => chk({ x: A.b.position.x, y: A.b.position.y + y, z: A.b.position.z }, RAD, 'actor' + A.idx))); dyn.forEach(d => { const sh = d.b.shapes[0]; if (sh instanceof CANNON.Sphere) chk(d.b.position, sh.radius, 'ball'); });
+  actors.forEach(A => { const v = Math.hypot(A.b.velocity.x, A.b.velocity.z); A.speed += (v - A.speed) * .25; A.dist += v * DT; if (A.b.position.y < -1) AUDIT.fell++; });
+  dyn.forEach(d => { if (d.b.position.y < -1) AUDIT.fell++; });
+}
+function simTo(t) { while (simT < t - 1e-9) stepSim(); }
+
+/* ================= POSE ================= */
+const smooth01 = v => v * v * (3 - 2 * v);
+function footTarget(u, Sx, lift) { u = ((u % 1) + 1) % 1; if (u < .5) return { x: Sx * (1 - 4 * u), y: 0 }; const v = (u - .5) * 2; return { x: -Sx + 2 * Sx * smooth01(v), y: lift * Math.sin(Math.PI * v) }; }
+function ik(l1, l2, tx, ty) { let d = Math.hypot(tx, ty); d = Math.min(Math.max(d, .05), l1 + l2 - .002); const dir = Math.atan2(tx, -ty), a = Math.acos(Math.min(1, Math.max(-1, (l1 * l1 + d * d - l2 * l2) / (2 * l1 * d)))); return { hip: dir + a, knee: -2 * a }; }
+function leanAt(A, t) { const k = A.def.lean; if (!k) return 0; if (t <= k[0].t) return k[0].v; for (let i = 1; i < k.length; i++) if (t <= k[i].t) { const u = (t - k[i - 1].t) / (k[i].t - k[i - 1].t || 1); return k[i - 1].v + (k[i].v - k[i - 1].v) * u; } return k[k.length - 1].v; }
+function pose(A, t) {
+  const R = A.rig, mv = A.def.noWalk ? 0 : Math.min(1, A.speed / 2.2), phase = A.dist / 1.5, Sx = .375 * Math.min(1, .45 + A.speed / 4.5), lift = .26;
+  const pelY = 1.385 - .035 * (1 - Math.cos(4 * Math.PI * phase)) * mv + Math.sin(t * 2.1 + A.off) * .012 * (1 - mv);
+  R.pelvis.position.y = pelY; let fxn = [0, 0]; const sp = A.spread || 0; R.leg.forEach((L, i) => L.hip.position.x = (i ? -1 : 1) * (.17 + .17 * sp));
+  R.leg.forEach((L, i) => { const f = footTarget(phase + i * .5, Sx, lift), fx = f.x * mv, fy = f.y * mv; fxn[i] = fx / .375; const s = ik(LEN.thigh, LEN.shin, fx, -pelY + fy + .03); L.hip.rotation.z = s.hip; L.sn.rotation.z = s.knee; L.sn.children[1] && 0; });
+  R.leg.forEach((L, i) => { L.sn.children[1].rotation.z = -(L.hip.rotation.z + L.sn.rotation.z) * .9; });   // shoe stays flat on the ground
+  R.arm.forEach((a, i) => { const sw = -fxn[i] * .62 * mv, idle = Math.sin(t * 1.9 + i + A.off) * .05; a.sh.rotation.z = (i ? -1 : 1) * (.12 * (1 - mv) + .8 * sp) + sw + idle; a.fo.rotation.z = .12 + .5 * mv * (.5 + .5 * Math.max(0, sw)) + .05 * (1 - mv); });
+  const aK = A.def.armsUp; if (aK) { let au = aK[aK.length - 1].v; if (t <= aK[0].t) au = aK[0].v; else for (let i = 1; i < aK.length; i++) if (t <= aK[i].t) { const u = (t - aK[i - 1].t) / (aK[i].t - aK[i - 1].t || 1); au = aK[i - 1].v + (aK[i].v - aK[i - 1].v) * u * u * (3 - 2 * u); break; }
+    if (au > 0) R.arm.forEach((a, i) => { if (A.def.armSide != null && A.def.armSide !== i) return; a.sh.rotation.z = a.sh.rotation.z * (1 - au) + (i ? -1 : 1) * (A.def.armAngle || 2.5) * au + Math.sin(t * 3 + i) * .04 * au; a.fo.rotation.z = a.fo.rotation.z * (1 - au) + (i ? -1 : 1) * .15 * au; }); }
+  R.torso.rotation.z = -.13 * mv - .015 * Math.sin(t * 2.1 + A.off) + sp * .2 * Math.sin(2 * Math.PI * SWAYF * t) * Math.sign(R.flip.scale.x || 1) - leanAt(A, t); R.head.rotation.z = .13 * mv * .6 + Math.sin(t * 1.3 + A.off) * .03; R.torso.position.y = Math.abs(Math.sin(phase * Math.PI * 2)) * .025 * mv;
+  let emo = A.def.face || 'happy'; const em = A.def.emote; if (em) for (const e of em) if (t >= e.t) emo = e.e;
+  R.setFace(emo, ((t * .9 + A.off) % 2.3) < .13); }
+
+/* ================= CAMERA ================= */
+const sm = u => u * u * u * (u * (u * 6 - 15) + 10);
+function swayState(t) { const k = story.sway; if (!k) return { a: 0, ph: 0 }; let a = k[k.length - 1].a; if (t <= k[0].t) a = k[0].a; else for (let i = 1; i < k.length; i++) if (t <= k[i].t) { const u = (t - k[i - 1].t) / (k[i].t - k[i - 1].t || 1); a = k[i - 1].a + (k[i].a - k[i - 1].a) * (u * u * (3 - 2 * u)); break; } return { a, ph: Math.sin(2 * Math.PI * SWAYF * t) }; }
+const dispAt = (SW, z) => swayL ? SW.a * SW.ph * Math.sin(Math.PI * Math.min(1, Math.max(0, (z + swayL / 2) / swayL))) : 0;
+function camAt(t, SW) {
+  const shots = story.shots; const s = shots.find(x => t >= x.a && t < x.b) || shots[shots.length - 1];
+  const u = Math.min(1, Math.max(0, (t - s.a) / (s.b - s.a))), e = sm(u);
+  const P = s.from.map((v, i) => v + (s.to[i] - v) * e); let Lk;
+  if (s.followActor != null) { const fp = actors[s.followActor].b.position; P[0] += fp.x; P[2] += fp.z; }   // offsets relative to the character
+  if (s.lookActor != null) { const bp = actors[s.lookActor].b.position, o = s.lookOff || [0, 1.5, 0]; Lk = [bp.x + o[0], bp.y + o[1], bp.z + o[2]]; } else Lk = s.look;
+  cam.fov = s.fov || 38; cam.position.set(...P); cam.up.set(0, 1, 0); cam.lookAt(...Lk); cam.rotateZ((s.roll || 0) * (1 - e * .5) * Math.PI / 180); if (s.swayRoll && SW) cam.rotateZ(SW.a * SW.ph * s.swayRoll);
+  (story.kicks || []).forEach(k => { const d = t - k.t; if (d >= 0 && d < 7 / 30) { const f = Math.round(t * 30), a = (k.amp || .25) * (1 - d * 30 / 7) * (f % 2 ? 1 : -1); cam.position.y += a; cam.rotateZ(a * .03); } });
+  if (blockers.some(bx => bx.containsPoint(cam.position))) AUDIT.camInside++;
+  cam.updateProjectionMatrix(); return s; }
+
+window.renderFrame = t => {
+  simTo(t); const SW = swayState(t); const s = camAt(t, SW); setLook(s.light || 'day');
+  swayGroups.forEach(g => g.g.position.x = dispAt(SW, g.zc)); dampers.forEach(d => d.m.visible = t >= (story.dampersAt ?? 1e9) + d.i * .06);
+  flags.forEach(f => f.m.rotation.y = Math.sin(t * 3 + f.ph) * .3); movers.forEach(m => { const k = lerpKeys(m.keys, t, true); m.g.position.set(k.x, m.y, k.z); if (m.turn) { const k2 = lerpKeys(m.keys, t + .05, true), dx = k2.x - k.x, dz = k2.z - k.z; if (Math.hypot(dx, dz) > 1e-4) m.g.rotation.y = Math.atan2(-dz, dx) + (m.yaw0 || 0); if (m.bob) m.g.position.y += Math.abs(Math.sin(t * 9)) * m.bob * (Math.hypot(dx, dz) > 1e-4 ? 1 : 0); } });
+  timed.forEach(o => o.g.visible = t >= o.at && t < (o.until ?? 1e9)); tilts.forEach(o => { let a = o.keys[o.keys.length - 1].a; const kk = o.keys; if (t <= kk[0].t) a = kk[0].a; else for (let i = 1; i < kk.length; i++) if (t <= kk[i].t) { const u = (t - kk[i - 1].t) / (kk[i].t - kk[i - 1].t || 1); a = kk[i - 1].a + (kk[i].a - kk[i - 1].a) * u * u * (3 - 2 * u); break; } o.g.rotation.z = -a * Math.PI / 180; });
+  dyn.forEach(d => { d.m.visible = !d.at || simT >= d.at; d.m.position.copy(d.b.position); d.m.quaternion.copy(d.b.quaternion); });
+  actors.forEach(A => { const p = A.b.position, R = A.rig; const onDeck = swayL && Math.abs(p.z) < swayL / 2 && p.y > swayTop - .2 && Math.abs(p.x) < swayW / 2 + .6; A.spread = onDeck ? Math.min(1, SW.a / (story.swayMax || .8)) : 0;
+    R.root.position.set(p.x + (onDeck ? dispAt(SW, p.z) : 0), p.y + (A.def.yOff || 0), p.z);
+    const yaw = Math.atan2(cam.position.x - p.x, cam.position.z - p.z); R.root.rotation.y = yaw;
+    const right = { x: Math.cos(yaw), z: -Math.sin(yaw) }; const vx = A.b.velocity.x, vz = A.b.velocity.z;
+    if (A.speed > .6 && !A.def.noWalk) A.faceT = (vx * right.x + vz * right.z) >= 0 ? 1 : -1; A.face += (A.faceT - A.face) * .35; R.flip.scale.x = Math.sign(A.face || 1) * Math.max(.1, Math.abs(A.face));
+    pose(A, t); if (A.def.show) R.root.visible = t >= A.def.show[0] && t < A.def.show[1]; });
+  r.render(scene, cam); return true; };
+window.audit = () => ({ ...AUDIT, solverPreCm: +(AUDIT.maxPen * 100).toFixed(2), visiblePenCm: +(AUDIT.vis * 100).toFixed(2), nophys: NOPHYS,
+  actorOverlap: actors.length > 1 ? +Math.max(0, 2 * RAD - Math.hypot(actors[0].b.position.x - actors[1].b.position.x, actors[0].b.position.z - actors[1].b.position.z)).toFixed(3) : 0 });
+window.READY = true; window.TOTAL = story.duration;
+</script>
