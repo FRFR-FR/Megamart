@@ -1045,5 +1045,5 @@
     }
   ],
   "actorPhysics": "kinematic",
-  "physicsNote": "Operator actors use the repository's animation-driven kinematic mode; the renderer, camera system, and character library are unchanged."
+  "physicsNote": "All actors use the repository's animation-driven kinematic mode; no renderer, camera, or character-library changes are required."
 }
