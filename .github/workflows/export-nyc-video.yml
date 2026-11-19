@@ -1,0 +1,29 @@
+name: Export NYC walkthrough MP4 download
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/export-nyc-video.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package-download:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify finished NYC MP4 exists
+        run: test -s production/renders/nyc-walkthrough-60s.mp4
+
+      - name: Upload a downloadable copy
+        uses: actions/upload-artifact@v4
+        with:
+          name: nyc-walkthrough-60s
+          path: production/renders/nyc-walkthrough-60s.mp4
+          if-no-files-found: error
+          retention-days: 7
