@@ -1,0 +1,108 @@
+name: Cartoon Short Factory — install and 10-second render
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - cartoon_short_factory_bundle.py
+      - .github/workflows/cartoon-short-factory.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install-and-render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Extract the verified package
+        shell: bash
+        run: |
+          set -euo pipefail
+          python cartoon_short_factory_bundle.py --out "$RUNNER_TEMP/csf-extract"
+          test -d "$RUNNER_TEMP/csf-extract/cartoon-short-factory"
+          cp -a "$RUNNER_TEMP/csf-extract/cartoon-short-factory/." "$GITHUB_WORKSPACE/"
+          test -f SKILL.md
+          test -f factory/render/package-lock.json
+          test -f factory/render/story.example.json
+          echo "Extracted package files: $(find . -type f ! -path './.git/*' | wc -l)"
+
+      - name: Commit the exact extracted package to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- SKILL.md factory references templates
+          if ! git diff --cached --quiet; then
+            git commit -m "Install checksum-verified Cartoon Short Factory package"
+            git push origin HEAD:main
+          else
+            echo "Extracted package is already present; no source commit needed."
+          fi
+
+      - name: Install only the locked renderer dependencies
+        run: npm ci --prefix factory/render --no-audit --no-fund
+
+      - name: Validate packaged Python and JavaScript
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q factory
+          node --check factory/render/render.mjs
+          node --check factory/render/lib/characters.js
+          node --check factory/render/lib/props.js
+
+      - name: Prepare a 10-second version of the package example
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          source = Path("factory/render/story.example.json")
+          story = json.loads(source.read_text(encoding="utf-8"))
+          if not isinstance(story, dict) or "duration" not in story:
+              raise SystemExit("Package example does not expose the documented duration field")
+          story["duration"] = 10
+          Path("factory/render/story.10s.json").write_text(
+              json.dumps(story, indent=2) + "\n", encoding="utf-8"
+          )
+          print("10-second story prepared from the package's own example.")
+          PY
+
+      - name: Render the 10-second animation
+        working-directory: factory/render
+        run: node render.mjs story.10s.json cartoon-short-factory-10s.mp4
+
+      - name: Verify rendered duration and media stream
+        working-directory: factory/render
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s cartoon-short-factory-10s.mp4
+          ffprobe -v error -show_entries format=duration:stream=codec_name,width,height,r_frame_rate -of json cartoon-short-factory-10s.mp4
+
+      - name: Upload the rendered animation and its story
+        uses: actions/upload-artifact@v4
+        with:
+          name: cartoon-short-factory-10-second-test
+          path: |
+            factory/render/cartoon-short-factory-10s.mp4
+            factory/render/story.10s.json
+          if-no-files-found: error
+          retention-days: 7
