@@ -125,6 +125,7 @@ jobs:
               actor.pop("y0", None)
               keys = actor.get("keys", [])
               if keys:
+                  keys[0]["z"] = -12.5 if index == 0 else -15.0
                   keys[-1]["z"] = 7.0 if index == 0 else 6.0
           story["duration"] = 10
           output = Path("factory/render/story.10s.json")
