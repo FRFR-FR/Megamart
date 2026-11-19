@@ -1045,5 +1045,5 @@
     }
   ],
   "actorPhysics": "kinematic",
-  "physicsNote": "Five grounded characters use the repository's animation-driven kinematic mode; the documented native camera shot schema and character rig remain unchanged."
+  "physicsNote": "Five grounded characters use the repository's kinematic actor option; 540x960 at 30fps, native camera logic, and character rig stay unchanged."
 }
