@@ -126,6 +126,9 @@ jobs:
                       scale_timeline(item)
 
           scale_timeline(story)
+          # Package rule: ground top is y=0.8, so actors must spawn at y0=0.85.
+          for actor in story.get("actors", []):
+              actor.setdefault("y0", 0.85)
           story["duration"] = 10
           output = Path("factory/render/story.10s.json")
           output.write_text(json.dumps(story, indent=2) + "\n", encoding="utf-8")
@@ -165,7 +168,7 @@ jobs:
           story = Path("renders/cartoon-short-factory-10s-story.json")
           probe = json.loads(subprocess.check_output([
               "ffprobe", "-v", "error", "-show_entries",
-              "format=duration:stream=codec_name,width,height,r_frame_rate",
+              "format=duration:stream=codec_type,codec_name,width,height,r_frame_rate",
               "-of", "json", str(video)
           ], text=True))
           stream = next(s for s in probe["streams"] if s.get("codec_type") == "video")
@@ -174,6 +177,17 @@ jobs:
                         for line in log.splitlines() if "PHYSICS AUDIT" in line), None)
           if audit is None:
               raise SystemExit("Renderer did not emit its PHYSICS AUDIT line")
+          audit_data = json.loads(audit)
+          if audit_data.get("fell", 0) != 0:
+              raise SystemExit(f"Physics QA failed: fell={audit_data.get('fell')}")
+          if audit_data.get("camInside", 0) != 0:
+              raise SystemExit(f"Physics QA failed: camInside={audit_data.get('camInside')}")
+          if audit_data.get("actorOverlap", 0) != 0:
+              raise SystemExit(f"Physics QA failed: actorOverlap={audit_data.get('actorOverlap')}")
+          if audit_data.get("visiblePenCm", 999) >= 1:
+              raise SystemExit(f"Physics QA failed: visiblePenCm={audit_data.get('visiblePenCm')} (must be < 1)")
+          if audit_data.get("over2cm", 999) > 10:
+              raise SystemExit(f"Physics QA failed: over2cm={audit_data.get('over2cm')} (must be 10 or fewer)")
           result = {
               "status": "rendered-and-verified",
               "duration_seconds": round(float(probe["format"]["duration"]), 3),
