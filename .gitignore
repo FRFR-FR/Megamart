@@ -1,0 +1,7 @@
+# Cartoon Short Factory build outputs
+factory/render/node_modules/
+factory/render/*.mp4
+factory/render/*.log
+factory/render/story.10s.json
+__pycache__/
+*.pyc
