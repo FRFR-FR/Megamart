@@ -490,6 +490,1255 @@
       "d": 0.9,
       "color": 10066578,
       "collide": false
+    },
+    {
+      "type": "shed",
+      "x": -38,
+      "z": -4,
+      "s": 1.05
+    },
+    {
+      "type": "shed",
+      "x": 47,
+      "z": -4,
+      "s": 0.95
+    },
+    {
+      "type": "flag",
+      "x": -40,
+      "z": 1
+    },
+    {
+      "type": "flag",
+      "x": 45,
+      "z": 1
+    },
+    {
+      "type": "boat",
+      "x": -13,
+      "y": 0.15,
+      "z": -31,
+      "s": 1.2,
+      "color": 5399914
+    },
+    {
+      "type": "cloud",
+      "x": -30,
+      "y": 21,
+      "z": -30,
+      "s": 1.05
+    },
+    {
+      "type": "cloud",
+      "x": 4,
+      "y": 24,
+      "z": -31,
+      "s": 0.9
+    },
+    {
+      "type": "cloud",
+      "x": 34,
+      "y": 20,
+      "z": -29,
+      "s": 1
+    },
+    {
+      "type": "bike",
+      "x": -42,
+      "z": 4,
+      "color": 4018504
+    },
+    {
+      "type": "bench",
+      "x": -36,
+      "z": 7
+    },
+    {
+      "type": "table",
+      "x": -34,
+      "y": 0.8,
+      "z": 1.4,
+      "color": 7361595
+    },
+    {
+      "type": "chair",
+      "x": -36.1,
+      "y": 0.8,
+      "z": 1.2,
+      "color": 7361595
+    },
+    {
+      "type": "chair",
+      "x": -32.1,
+      "y": 0.8,
+      "z": 1.2,
+      "color": 7361595
+    },
+    {
+      "type": "suitcase",
+      "x": -34.4,
+      "y": 0.8,
+      "z": 1.4,
+      "color": 7100741
+    },
+    {
+      "type": "table",
+      "x": 45,
+      "y": 0.8,
+      "z": 1.5,
+      "color": 7361595
+    },
+    {
+      "type": "chair",
+      "x": 43,
+      "y": 0.8,
+      "z": 1.4,
+      "color": 7361595
+    },
+    {
+      "type": "chair",
+      "x": 47,
+      "y": 0.8,
+      "z": 1.4,
+      "color": 7361595
+    },
+    {
+      "type": "crate_box",
+      "x": -30,
+      "y": 0.8,
+      "z": -2.5,
+      "size": 1.15,
+      "color": 9401678
+    },
+    {
+      "type": "crate_box",
+      "x": -24,
+      "y": 0.8,
+      "z": -3,
+      "size": 0.9,
+      "color": 10125660
+    },
+    {
+      "type": "crate_box",
+      "x": -18,
+      "y": 0.8,
+      "z": -2.4,
+      "size": 1,
+      "color": 9401678
+    },
+    {
+      "type": "crate_box",
+      "x": -6,
+      "y": 0.8,
+      "z": -2.3,
+      "size": 0.9,
+      "color": 10125660
+    },
+    {
+      "type": "crate_box",
+      "x": 2,
+      "y": 0.8,
+      "z": -3.2,
+      "size": 1,
+      "color": 9401678
+    },
+    {
+      "type": "crate_box",
+      "x": 8,
+      "y": 0.8,
+      "z": -2.2,
+      "size": 0.85,
+      "color": 10125660
+    },
+    {
+      "type": "crate_box",
+      "x": 17,
+      "y": 0.8,
+      "z": -3.6,
+      "size": 1,
+      "color": 9401678
+    },
+    {
+      "type": "crate_box",
+      "x": 29,
+      "y": 0.8,
+      "z": -3.5,
+      "size": 0.95,
+      "color": 10125660
+    },
+    {
+      "type": "crate_box",
+      "x": 40,
+      "y": 0.8,
+      "z": -3,
+      "size": 1.05,
+      "color": 9401678
+    },
+    {
+      "type": "barrier",
+      "x": -28,
+      "y": 0.8,
+      "z": 0.2,
+      "w": 4
+    },
+    {
+      "type": "barrier",
+      "x": 14,
+      "y": 0.8,
+      "z": 0,
+      "w": 3.2
+    },
+    {
+      "type": "cone",
+      "x": -31,
+      "y": 0.8,
+      "z": 1.5
+    },
+    {
+      "type": "cone",
+      "x": -27,
+      "y": 0.8,
+      "z": 1.5
+    },
+    {
+      "type": "cone",
+      "x": -8,
+      "y": 0.8,
+      "z": 1
+    },
+    {
+      "type": "cone",
+      "x": 6,
+      "y": 0.8,
+      "z": 1
+    },
+    {
+      "type": "cone",
+      "x": 18,
+      "y": 0.8,
+      "z": 1
+    },
+    {
+      "type": "cone",
+      "x": 30,
+      "y": 0.8,
+      "z": 1
+    },
+    {
+      "type": "van",
+      "x": -54,
+      "y": 0.8,
+      "z": -18.3,
+      "color": 4871496,
+      "stripe": 13157290,
+      "keys": [
+        {
+          "t": 0,
+          "x": -54,
+          "z": -18.3
+        },
+        {
+          "t": 6,
+          "x": -43,
+          "z": -18.3
+        },
+        {
+          "t": 12,
+          "x": -27,
+          "z": -18.3
+        },
+        {
+          "t": 18,
+          "x": -10,
+          "z": -18.3
+        },
+        {
+          "t": 24,
+          "x": 8,
+          "z": -18.3
+        },
+        {
+          "t": 30,
+          "x": 28,
+          "z": -18.3
+        }
+      ]
+    },
+    {
+      "type": "car",
+      "x": 54,
+      "y": 0.8,
+      "z": -21.3,
+      "color": 3753531,
+      "keys": [
+        {
+          "t": 0,
+          "x": 54,
+          "z": -21.3
+        },
+        {
+          "t": 6,
+          "x": 42,
+          "z": -21.3
+        },
+        {
+          "t": 12,
+          "x": 27,
+          "z": -21.3
+        },
+        {
+          "t": 18,
+          "x": 10,
+          "z": -21.3
+        },
+        {
+          "t": 24,
+          "x": -7,
+          "z": -21.3
+        },
+        {
+          "t": 30,
+          "x": -24,
+          "z": -21.3
+        }
+      ]
+    },
+    {
+      "type": "box",
+      "x": -38,
+      "y": 0.8,
+      "z": -2.5,
+      "w": 0.2,
+      "h": 7.5,
+      "d": 0.2,
+      "color": 6185310,
+      "collide": false
+    },
+    {
+      "type": "box",
+      "x": -38,
+      "y": 8.15,
+      "z": -2.5,
+      "w": 2.8,
+      "h": 0.16,
+      "d": 0.16,
+      "color": 6185310,
+      "collide": false
+    },
+    {
+      "type": "box",
+      "x": 47,
+      "y": 0.8,
+      "z": -2.5,
+      "w": 0.2,
+      "h": 7.5,
+      "d": 0.2,
+      "color": 6185310,
+      "collide": false
+    },
+    {
+      "type": "box",
+      "x": 47,
+      "y": 8.15,
+      "z": -2.5,
+      "w": 2.8,
+      "h": 0.16,
+      "d": 0.16,
+      "color": 6185310,
+      "collide": false
+    },
+    {
+      "type": "box",
+      "x": 4.5,
+      "y": 7.5,
+      "z": -2.5,
+      "w": 85,
+      "h": 0.045,
+      "d": 0.045,
+      "color": 4278087,
+      "collide": false
+    },
+    {
+      "type": "box",
+      "x": -24,
+      "y": 14.4,
+      "z": -25,
+      "w": 4.8,
+      "h": 0.22,
+      "d": 0.34,
+      "color": 4870472,
+      "collide": false,
+      "at": 2.85,
+      "until": 3.21,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -24.05,
+      "y": 14.530000000000001,
+      "z": -25,
+      "w": 1,
+      "h": 0.12,
+      "d": 5.8,
+      "color": 4870472,
+      "collide": false,
+      "at": 2.85,
+      "until": 3.21,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -24.05,
+      "y": 14.38,
+      "z": -25,
+      "w": 0.95,
+      "h": 0.1,
+      "d": 4.8,
+      "color": 5857362,
+      "collide": false,
+      "at": 2.85,
+      "until": 3.21,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -25.9,
+      "y": 14.52,
+      "z": -25,
+      "w": 0.75,
+      "h": 0.1,
+      "d": 1.8,
+      "color": 4870472,
+      "collide": false,
+      "at": 2.85,
+      "until": 3.21,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -26,
+      "y": 14.52,
+      "z": -25,
+      "w": 0.7,
+      "h": 0.85,
+      "d": 0.12,
+      "color": 4870472,
+      "collide": false,
+      "at": 2.85,
+      "until": 3.21,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -23.15,
+      "y": 14.58,
+      "z": -25,
+      "w": 0.72,
+      "h": 0.3,
+      "d": 0.38,
+      "color": 2701635,
+      "collide": false,
+      "at": 2.85,
+      "until": 3.21,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -21.55,
+      "y": 14.450000000000001,
+      "z": -25,
+      "w": 0.12,
+      "h": 0.78,
+      "d": 0.12,
+      "color": 3357241,
+      "collide": false,
+      "at": 2.85,
+      "until": 3.21,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -18,
+      "y": 14.4,
+      "z": -25,
+      "w": 4.8,
+      "h": 0.22,
+      "d": 0.34,
+      "color": 4870472,
+      "collide": false,
+      "at": 3.21,
+      "until": 3.57,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -18.05,
+      "y": 14.530000000000001,
+      "z": -25,
+      "w": 1,
+      "h": 0.12,
+      "d": 5.8,
+      "color": 4870472,
+      "collide": false,
+      "at": 3.21,
+      "until": 3.57,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -18.05,
+      "y": 14.38,
+      "z": -25,
+      "w": 0.95,
+      "h": 0.1,
+      "d": 4.8,
+      "color": 5857362,
+      "collide": false,
+      "at": 3.21,
+      "until": 3.57,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -19.9,
+      "y": 14.52,
+      "z": -25,
+      "w": 0.75,
+      "h": 0.1,
+      "d": 1.8,
+      "color": 4870472,
+      "collide": false,
+      "at": 3.21,
+      "until": 3.57,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -20,
+      "y": 14.52,
+      "z": -25,
+      "w": 0.7,
+      "h": 0.85,
+      "d": 0.12,
+      "color": 4870472,
+      "collide": false,
+      "at": 3.21,
+      "until": 3.57,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -17.15,
+      "y": 14.58,
+      "z": -25,
+      "w": 0.72,
+      "h": 0.3,
+      "d": 0.38,
+      "color": 2701635,
+      "collide": false,
+      "at": 3.21,
+      "until": 3.57,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -15.55,
+      "y": 14.450000000000001,
+      "z": -25,
+      "w": 0.12,
+      "h": 0.78,
+      "d": 0.12,
+      "color": 3357241,
+      "collide": false,
+      "at": 3.21,
+      "until": 3.57,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -12,
+      "y": 14.4,
+      "z": -25,
+      "w": 4.8,
+      "h": 0.22,
+      "d": 0.34,
+      "color": 4870472,
+      "collide": false,
+      "at": 3.5700000000000003,
+      "until": 3.93,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -12.05,
+      "y": 14.530000000000001,
+      "z": -25,
+      "w": 1,
+      "h": 0.12,
+      "d": 5.8,
+      "color": 4870472,
+      "collide": false,
+      "at": 3.5700000000000003,
+      "until": 3.93,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -12.05,
+      "y": 14.38,
+      "z": -25,
+      "w": 0.95,
+      "h": 0.1,
+      "d": 4.8,
+      "color": 5857362,
+      "collide": false,
+      "at": 3.5700000000000003,
+      "until": 3.93,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -13.9,
+      "y": 14.52,
+      "z": -25,
+      "w": 0.75,
+      "h": 0.1,
+      "d": 1.8,
+      "color": 4870472,
+      "collide": false,
+      "at": 3.5700000000000003,
+      "until": 3.93,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -14,
+      "y": 14.52,
+      "z": -25,
+      "w": 0.7,
+      "h": 0.85,
+      "d": 0.12,
+      "color": 4870472,
+      "collide": false,
+      "at": 3.5700000000000003,
+      "until": 3.93,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -11.15,
+      "y": 14.58,
+      "z": -25,
+      "w": 0.72,
+      "h": 0.3,
+      "d": 0.38,
+      "color": 2701635,
+      "collide": false,
+      "at": 3.5700000000000003,
+      "until": 3.93,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -9.55,
+      "y": 14.450000000000001,
+      "z": -25,
+      "w": 0.12,
+      "h": 0.78,
+      "d": 0.12,
+      "color": 3357241,
+      "collide": false,
+      "at": 3.5700000000000003,
+      "until": 3.93,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -6,
+      "y": 14.4,
+      "z": -25,
+      "w": 4.8,
+      "h": 0.22,
+      "d": 0.34,
+      "color": 4870472,
+      "collide": false,
+      "at": 3.93,
+      "until": 4.29,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -6.05,
+      "y": 14.530000000000001,
+      "z": -25,
+      "w": 1,
+      "h": 0.12,
+      "d": 5.8,
+      "color": 4870472,
+      "collide": false,
+      "at": 3.93,
+      "until": 4.29,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -6.05,
+      "y": 14.38,
+      "z": -25,
+      "w": 0.95,
+      "h": 0.1,
+      "d": 4.8,
+      "color": 5857362,
+      "collide": false,
+      "at": 3.93,
+      "until": 4.29,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -7.9,
+      "y": 14.52,
+      "z": -25,
+      "w": 0.75,
+      "h": 0.1,
+      "d": 1.8,
+      "color": 4870472,
+      "collide": false,
+      "at": 3.93,
+      "until": 4.29,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -8,
+      "y": 14.52,
+      "z": -25,
+      "w": 0.7,
+      "h": 0.85,
+      "d": 0.12,
+      "color": 4870472,
+      "collide": false,
+      "at": 3.93,
+      "until": 4.29,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -5.15,
+      "y": 14.58,
+      "z": -25,
+      "w": 0.72,
+      "h": 0.3,
+      "d": 0.38,
+      "color": 2701635,
+      "collide": false,
+      "at": 3.93,
+      "until": 4.29,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -3.55,
+      "y": 14.450000000000001,
+      "z": -25,
+      "w": 0.12,
+      "h": 0.78,
+      "d": 0.12,
+      "color": 3357241,
+      "collide": false,
+      "at": 3.93,
+      "until": 4.29,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 0,
+      "y": 14.4,
+      "z": -25,
+      "w": 4.8,
+      "h": 0.22,
+      "d": 0.34,
+      "color": 4870472,
+      "collide": false,
+      "at": 4.29,
+      "until": 4.65,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -0.05,
+      "y": 14.530000000000001,
+      "z": -25,
+      "w": 1,
+      "h": 0.12,
+      "d": 5.8,
+      "color": 4870472,
+      "collide": false,
+      "at": 4.29,
+      "until": 4.65,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -0.05,
+      "y": 14.38,
+      "z": -25,
+      "w": 0.95,
+      "h": 0.1,
+      "d": 4.8,
+      "color": 5857362,
+      "collide": false,
+      "at": 4.29,
+      "until": 4.65,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -1.9,
+      "y": 14.52,
+      "z": -25,
+      "w": 0.75,
+      "h": 0.1,
+      "d": 1.8,
+      "color": 4870472,
+      "collide": false,
+      "at": 4.29,
+      "until": 4.65,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": -2,
+      "y": 14.52,
+      "z": -25,
+      "w": 0.7,
+      "h": 0.85,
+      "d": 0.12,
+      "color": 4870472,
+      "collide": false,
+      "at": 4.29,
+      "until": 4.65,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 0.85,
+      "y": 14.58,
+      "z": -25,
+      "w": 0.72,
+      "h": 0.3,
+      "d": 0.38,
+      "color": 2701635,
+      "collide": false,
+      "at": 4.29,
+      "until": 4.65,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 2.45,
+      "y": 14.450000000000001,
+      "z": -25,
+      "w": 0.12,
+      "h": 0.78,
+      "d": 0.12,
+      "color": 3357241,
+      "collide": false,
+      "at": 4.29,
+      "until": 4.65,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 6,
+      "y": 14.4,
+      "z": -25,
+      "w": 4.8,
+      "h": 0.22,
+      "d": 0.34,
+      "color": 4870472,
+      "collide": false,
+      "at": 4.65,
+      "until": 5.010000000000001,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 5.95,
+      "y": 14.530000000000001,
+      "z": -25,
+      "w": 1,
+      "h": 0.12,
+      "d": 5.8,
+      "color": 4870472,
+      "collide": false,
+      "at": 4.65,
+      "until": 5.010000000000001,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 5.95,
+      "y": 14.38,
+      "z": -25,
+      "w": 0.95,
+      "h": 0.1,
+      "d": 4.8,
+      "color": 5857362,
+      "collide": false,
+      "at": 4.65,
+      "until": 5.010000000000001,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 4.1,
+      "y": 14.52,
+      "z": -25,
+      "w": 0.75,
+      "h": 0.1,
+      "d": 1.8,
+      "color": 4870472,
+      "collide": false,
+      "at": 4.65,
+      "until": 5.010000000000001,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 4,
+      "y": 14.52,
+      "z": -25,
+      "w": 0.7,
+      "h": 0.85,
+      "d": 0.12,
+      "color": 4870472,
+      "collide": false,
+      "at": 4.65,
+      "until": 5.010000000000001,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 6.85,
+      "y": 14.58,
+      "z": -25,
+      "w": 0.72,
+      "h": 0.3,
+      "d": 0.38,
+      "color": 2701635,
+      "collide": false,
+      "at": 4.65,
+      "until": 5.010000000000001,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 8.45,
+      "y": 14.450000000000001,
+      "z": -25,
+      "w": 0.12,
+      "h": 0.78,
+      "d": 0.12,
+      "color": 3357241,
+      "collide": false,
+      "at": 4.65,
+      "until": 5.010000000000001,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 12,
+      "y": 14.4,
+      "z": -25,
+      "w": 4.8,
+      "h": 0.22,
+      "d": 0.34,
+      "color": 4870472,
+      "collide": false,
+      "at": 5.01,
+      "until": 5.37,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 11.95,
+      "y": 14.530000000000001,
+      "z": -25,
+      "w": 1,
+      "h": 0.12,
+      "d": 5.8,
+      "color": 4870472,
+      "collide": false,
+      "at": 5.01,
+      "until": 5.37,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 11.95,
+      "y": 14.38,
+      "z": -25,
+      "w": 0.95,
+      "h": 0.1,
+      "d": 4.8,
+      "color": 5857362,
+      "collide": false,
+      "at": 5.01,
+      "until": 5.37,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 10.1,
+      "y": 14.52,
+      "z": -25,
+      "w": 0.75,
+      "h": 0.1,
+      "d": 1.8,
+      "color": 4870472,
+      "collide": false,
+      "at": 5.01,
+      "until": 5.37,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 10,
+      "y": 14.52,
+      "z": -25,
+      "w": 0.7,
+      "h": 0.85,
+      "d": 0.12,
+      "color": 4870472,
+      "collide": false,
+      "at": 5.01,
+      "until": 5.37,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 12.85,
+      "y": 14.58,
+      "z": -25,
+      "w": 0.72,
+      "h": 0.3,
+      "d": 0.38,
+      "color": 2701635,
+      "collide": false,
+      "at": 5.01,
+      "until": 5.37,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 14.45,
+      "y": 14.450000000000001,
+      "z": -25,
+      "w": 0.12,
+      "h": 0.78,
+      "d": 0.12,
+      "color": 3357241,
+      "collide": false,
+      "at": 5.01,
+      "until": 5.37,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 18,
+      "y": 14.4,
+      "z": -25,
+      "w": 4.8,
+      "h": 0.22,
+      "d": 0.34,
+      "color": 4870472,
+      "collide": false,
+      "at": 5.37,
+      "until": 5.73,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 17.95,
+      "y": 14.530000000000001,
+      "z": -25,
+      "w": 1,
+      "h": 0.12,
+      "d": 5.8,
+      "color": 4870472,
+      "collide": false,
+      "at": 5.37,
+      "until": 5.73,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 17.95,
+      "y": 14.38,
+      "z": -25,
+      "w": 0.95,
+      "h": 0.1,
+      "d": 4.8,
+      "color": 5857362,
+      "collide": false,
+      "at": 5.37,
+      "until": 5.73,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 16.1,
+      "y": 14.52,
+      "z": -25,
+      "w": 0.75,
+      "h": 0.1,
+      "d": 1.8,
+      "color": 4870472,
+      "collide": false,
+      "at": 5.37,
+      "until": 5.73,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 16,
+      "y": 14.52,
+      "z": -25,
+      "w": 0.7,
+      "h": 0.85,
+      "d": 0.12,
+      "color": 4870472,
+      "collide": false,
+      "at": 5.37,
+      "until": 5.73,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 18.85,
+      "y": 14.58,
+      "z": -25,
+      "w": 0.72,
+      "h": 0.3,
+      "d": 0.38,
+      "color": 2701635,
+      "collide": false,
+      "at": 5.37,
+      "until": 5.73,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 20.45,
+      "y": 14.450000000000001,
+      "z": -25,
+      "w": 0.12,
+      "h": 0.78,
+      "d": 0.12,
+      "color": 3357241,
+      "collide": false,
+      "at": 5.37,
+      "until": 5.73,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 24,
+      "y": 14.4,
+      "z": -25,
+      "w": 4.8,
+      "h": 0.22,
+      "d": 0.34,
+      "color": 4870472,
+      "collide": false,
+      "at": 5.73,
+      "until": 6.090000000000001,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 23.95,
+      "y": 14.530000000000001,
+      "z": -25,
+      "w": 1,
+      "h": 0.12,
+      "d": 5.8,
+      "color": 4870472,
+      "collide": false,
+      "at": 5.73,
+      "until": 6.090000000000001,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 23.95,
+      "y": 14.38,
+      "z": -25,
+      "w": 0.95,
+      "h": 0.1,
+      "d": 4.8,
+      "color": 5857362,
+      "collide": false,
+      "at": 5.73,
+      "until": 6.090000000000001,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 22.1,
+      "y": 14.52,
+      "z": -25,
+      "w": 0.75,
+      "h": 0.1,
+      "d": 1.8,
+      "color": 4870472,
+      "collide": false,
+      "at": 5.73,
+      "until": 6.090000000000001,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 22,
+      "y": 14.52,
+      "z": -25,
+      "w": 0.7,
+      "h": 0.85,
+      "d": 0.12,
+      "color": 4870472,
+      "collide": false,
+      "at": 5.73,
+      "until": 6.090000000000001,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 24.85,
+      "y": 14.58,
+      "z": -25,
+      "w": 0.72,
+      "h": 0.3,
+      "d": 0.38,
+      "color": 2701635,
+      "collide": false,
+      "at": 5.73,
+      "until": 6.090000000000001,
+      "inkW": 0.035
+    },
+    {
+      "type": "box",
+      "x": 26.45,
+      "y": 14.450000000000001,
+      "z": -25,
+      "w": 0.12,
+      "h": 0.78,
+      "d": 0.12,
+      "color": 3357241,
+      "collide": false,
+      "at": 5.73,
+      "until": 6.090000000000001,
+      "inkW": 0.035
     }
   ],
   "actors": [
@@ -743,6 +1992,1111 @@
           "t": 30,
           "x": 3.6,
           "z": 10.2
+        }
+      ]
+    },
+    {
+      "outfit": "coat",
+      "shirt": "#596b78",
+      "accent": "#b7a17c",
+      "pants": "#343e47",
+      "shoeStyle": "boot",
+      "hat": "#38464b",
+      "hatStyle": "flatcap",
+      "hair": "#392c25",
+      "beard": "stubble",
+      "build": "stocky",
+      "skin": "#e2b18f",
+      "face": "neutral",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": false,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": -8,
+          "z": 6
+        },
+        {
+          "t": 12,
+          "x": -7.3,
+          "z": 5.6
+        },
+        {
+          "t": 22,
+          "x": -6.8,
+          "z": 5.2
+        },
+        {
+          "t": 30,
+          "x": -6.5,
+          "z": 5
+        }
+      ],
+      "lin": true,
+      "armsUp": [
+        {
+          "t": 0,
+          "v": 0
+        },
+        {
+          "t": 4,
+          "v": 1
+        },
+        {
+          "t": 6,
+          "v": 0
+        },
+        {
+          "t": 30,
+          "v": 0
+        }
+      ],
+      "emote": [
+        {
+          "t": 0,
+          "e": "neutral"
+        },
+        {
+          "t": 5,
+          "e": "surprised"
+        },
+        {
+          "t": 25,
+          "e": "neutral"
+        }
+      ]
+    },
+    {
+      "outfit": "jacket",
+      "shirt": "#52665a",
+      "accent": "#b38c5c",
+      "pants": "#374139",
+      "shoeStyle": "boot",
+      "hat": "#3f4940",
+      "hatStyle": "flatcap",
+      "hair": "#30251f",
+      "beard": "moustache",
+      "build": "normal",
+      "skin": "#c58f70",
+      "face": "worried",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": true,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": -6,
+          "z": 10
+        },
+        {
+          "t": 30,
+          "x": -6,
+          "z": 10
+        }
+      ]
+    },
+    {
+      "outfit": "suit",
+      "shirt": "#536578",
+      "accent": "#bd9d6e",
+      "pants": "#313b47",
+      "shoeStyle": "boot",
+      "hat": "#39434b",
+      "hatStyle": "flatcap",
+      "hair": "#4a3627",
+      "beard": "none",
+      "build": "normal",
+      "skin": "#e9c3a5",
+      "face": "surprised",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": true,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": -1.8,
+          "z": 13
+        },
+        {
+          "t": 30,
+          "x": -1.8,
+          "z": 13
+        }
+      ]
+    },
+    {
+      "outfit": "jumper",
+      "shirt": "#647078",
+      "accent": "#c2a881",
+      "pants": "#384047",
+      "shoeStyle": "boot",
+      "hat": "#454c4d",
+      "hatStyle": "flatcap",
+      "hair": "#45352c",
+      "beard": "beard",
+      "build": "normal",
+      "skin": "#d8aa8c",
+      "face": "happy",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": true,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": 7,
+          "z": 13
+        },
+        {
+          "t": 30,
+          "x": 7,
+          "z": 13
+        }
+      ],
+      "armsUp": [
+        {
+          "t": 0,
+          "v": 0
+        },
+        {
+          "t": 11.5,
+          "v": 1
+        },
+        {
+          "t": 13.5,
+          "v": 0
+        },
+        {
+          "t": 30,
+          "v": 0
+        }
+      ]
+    },
+    {
+      "outfit": "coat",
+      "shirt": "#6d513e",
+      "accent": "#b78e5e",
+      "pants": "#343e47",
+      "shoeStyle": "boot",
+      "hat": "#38464b",
+      "hatStyle": "flatcap",
+      "hair": "#392c25",
+      "beard": "stubble",
+      "build": "stocky",
+      "skin": "#b98064",
+      "face": "neutral",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": false,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": 8,
+          "z": 6
+        },
+        {
+          "t": 12,
+          "x": 8.7,
+          "z": 5.6
+        },
+        {
+          "t": 22,
+          "x": 9.2,
+          "z": 5.2
+        },
+        {
+          "t": 30,
+          "x": 9.5,
+          "z": 5
+        }
+      ],
+      "lin": true
+    },
+    {
+      "outfit": "jacket",
+      "shirt": "#566875",
+      "accent": "#a99470",
+      "pants": "#374139",
+      "shoeStyle": "boot",
+      "hat": "#3f4940",
+      "hatStyle": "flatcap",
+      "hair": "#30251f",
+      "beard": "moustache",
+      "build": "normal",
+      "skin": "#e0b18e",
+      "face": "worried",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": true,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": -31,
+          "z": 2
+        },
+        {
+          "t": 30,
+          "x": -31,
+          "z": 2
+        }
+      ],
+      "emote": [
+        {
+          "t": 0,
+          "e": "worried"
+        },
+        {
+          "t": 17.5,
+          "e": "surprised"
+        },
+        {
+          "t": 25,
+          "e": "neutral"
+        }
+      ]
+    },
+    {
+      "outfit": "coat",
+      "shirt": "#4e6255",
+      "accent": "#ad8757",
+      "pants": "#313b47",
+      "shoeStyle": "boot",
+      "hat": "#39434b",
+      "hatStyle": "flatcap",
+      "hair": "#4a3627",
+      "beard": "none",
+      "build": "normal",
+      "skin": "#c88f6f",
+      "face": "surprised",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": true,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": -28,
+          "z": 7
+        },
+        {
+          "t": 30,
+          "x": -28,
+          "z": 7
+        }
+      ],
+      "armsUp": [
+        {
+          "t": 0,
+          "v": 0
+        },
+        {
+          "t": 19,
+          "v": 1
+        },
+        {
+          "t": 21,
+          "v": 0
+        },
+        {
+          "t": 30,
+          "v": 0
+        }
+      ]
+    },
+    {
+      "outfit": "jacket",
+      "shirt": "#66717c",
+      "accent": "#b99e74",
+      "pants": "#384047",
+      "shoeStyle": "boot",
+      "hat": "#454c4d",
+      "hatStyle": "flatcap",
+      "hair": "#45352c",
+      "beard": "beard",
+      "build": "normal",
+      "skin": "#edc9aa",
+      "face": "happy",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": false,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": -23,
+          "z": 11
+        },
+        {
+          "t": 12,
+          "x": -22.3,
+          "z": 10.6
+        },
+        {
+          "t": 22,
+          "x": -21.8,
+          "z": 10.2
+        },
+        {
+          "t": 30,
+          "x": -21.5,
+          "z": 10
+        }
+      ],
+      "lin": true
+    },
+    {
+      "outfit": "suit",
+      "shirt": "#76523d",
+      "accent": "#b29366",
+      "pants": "#343e47",
+      "shoeStyle": "boot",
+      "hat": "#38464b",
+      "hatStyle": "flatcap",
+      "hair": "#392c25",
+      "beard": "stubble",
+      "build": "stocky",
+      "skin": "#9b684f",
+      "face": "neutral",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": false,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": -17,
+          "z": 6
+        },
+        {
+          "t": 12,
+          "x": -16.3,
+          "z": 5.6
+        },
+        {
+          "t": 22,
+          "x": -15.8,
+          "z": 5.2
+        },
+        {
+          "t": 30,
+          "x": -15.5,
+          "z": 5
+        }
+      ],
+      "lin": true
+    },
+    {
+      "outfit": "jumper",
+      "shirt": "#4d5c69",
+      "accent": "#c2a779",
+      "pants": "#374139",
+      "shoeStyle": "boot",
+      "hat": "#3f4940",
+      "hatStyle": "flatcap",
+      "hair": "#30251f",
+      "beard": "moustache",
+      "build": "normal",
+      "skin": "#e7bea0",
+      "face": "worried",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": true,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": -34,
+          "z": 11
+        },
+        {
+          "t": 30,
+          "x": -34,
+          "z": 11
+        }
+      ],
+      "armsUp": [
+        {
+          "t": 0,
+          "v": 0
+        },
+        {
+          "t": 9,
+          "v": 1
+        },
+        {
+          "t": 11,
+          "v": 0
+        },
+        {
+          "t": 30,
+          "v": 0
+        }
+      ]
+    },
+    {
+      "outfit": "coat",
+      "shirt": "#526c60",
+      "accent": "#b18d61",
+      "pants": "#313b47",
+      "shoeStyle": "boot",
+      "hat": "#39434b",
+      "hatStyle": "flatcap",
+      "hair": "#4a3627",
+      "beard": "none",
+      "build": "normal",
+      "skin": "#d6a382",
+      "face": "surprised",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": true,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": -5,
+          "z": 2
+        },
+        {
+          "t": 30,
+          "x": -5,
+          "z": 2
+        }
+      ],
+      "emote": [
+        {
+          "t": 0,
+          "e": "surprised"
+        },
+        {
+          "t": 12.5,
+          "e": "surprised"
+        },
+        {
+          "t": 25,
+          "e": "neutral"
+        }
+      ]
+    },
+    {
+      "outfit": "jacket",
+      "shirt": "#596b79",
+      "accent": "#bba17a",
+      "pants": "#384047",
+      "shoeStyle": "boot",
+      "hat": "#454c4d",
+      "hatStyle": "flatcap",
+      "hair": "#45352c",
+      "beard": "beard",
+      "build": "normal",
+      "skin": "#eac4a4",
+      "face": "happy",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": true,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": -2,
+          "z": 6
+        },
+        {
+          "t": 30,
+          "x": -2,
+          "z": 6
+        }
+      ]
+    },
+    {
+      "outfit": "coat",
+      "shirt": "#785a43",
+      "accent": "#b99667",
+      "pants": "#343e47",
+      "shoeStyle": "boot",
+      "hat": "#38464b",
+      "hatStyle": "flatcap",
+      "hair": "#392c25",
+      "beard": "stubble",
+      "build": "stocky",
+      "skin": "#e2b18f",
+      "face": "neutral",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": false,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": 3.8,
+          "z": 3
+        },
+        {
+          "t": 12,
+          "x": 4.5,
+          "z": 2.6
+        },
+        {
+          "t": 22,
+          "x": 5,
+          "z": 2.2
+        },
+        {
+          "t": 30,
+          "x": 5.3,
+          "z": 2
+        }
+      ],
+      "lin": true,
+      "armsUp": [
+        {
+          "t": 0,
+          "v": 0
+        },
+        {
+          "t": 16.5,
+          "v": 1
+        },
+        {
+          "t": 18.5,
+          "v": 0
+        },
+        {
+          "t": 30,
+          "v": 0
+        }
+      ]
+    },
+    {
+      "outfit": "jacket",
+      "shirt": "#53677b",
+      "accent": "#b29a72",
+      "pants": "#374139",
+      "shoeStyle": "boot",
+      "hat": "#3f4940",
+      "hatStyle": "flatcap",
+      "hair": "#30251f",
+      "beard": "moustache",
+      "build": "normal",
+      "skin": "#c58f70",
+      "face": "worried",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": true,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": 8,
+          "z": 9
+        },
+        {
+          "t": 30,
+          "x": 8,
+          "z": 9
+        }
+      ]
+    },
+    {
+      "outfit": "suit",
+      "shirt": "#6b6257",
+      "accent": "#baa27d",
+      "pants": "#313b47",
+      "shoeStyle": "boot",
+      "hat": "#39434b",
+      "hatStyle": "flatcap",
+      "hair": "#4a3627",
+      "beard": "none",
+      "build": "normal",
+      "skin": "#e9c3a5",
+      "face": "surprised",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": false,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": 1,
+          "z": 15
+        },
+        {
+          "t": 12,
+          "x": 1.7,
+          "z": 14.6
+        },
+        {
+          "t": 22,
+          "x": 2.2,
+          "z": 14.2
+        },
+        {
+          "t": 30,
+          "x": 2.5,
+          "z": 14
+        }
+      ],
+      "lin": true
+    },
+    {
+      "outfit": "jumper",
+      "shirt": "#52665e",
+      "accent": "#ad8a5e",
+      "pants": "#384047",
+      "shoeStyle": "boot",
+      "hat": "#454c4d",
+      "hatStyle": "flatcap",
+      "hair": "#45352c",
+      "beard": "beard",
+      "build": "normal",
+      "skin": "#d8aa8c",
+      "face": "happy",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": true,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": 15,
+          "z": 4
+        },
+        {
+          "t": 30,
+          "x": 15,
+          "z": 4
+        }
+      ],
+      "armsUp": [
+        {
+          "t": 0,
+          "v": 0
+        },
+        {
+          "t": 6.5,
+          "v": 1
+        },
+        {
+          "t": 8.5,
+          "v": 0
+        },
+        {
+          "t": 30,
+          "v": 0
+        }
+      ],
+      "emote": [
+        {
+          "t": 0,
+          "e": "happy"
+        },
+        {
+          "t": 7.5,
+          "e": "surprised"
+        },
+        {
+          "t": 25,
+          "e": "neutral"
+        }
+      ]
+    },
+    {
+      "outfit": "coat",
+      "shirt": "#5c6c7b",
+      "accent": "#bba17b",
+      "pants": "#343e47",
+      "shoeStyle": "boot",
+      "hat": "#38464b",
+      "hatStyle": "flatcap",
+      "hair": "#392c25",
+      "beard": "stubble",
+      "build": "stocky",
+      "skin": "#b98064",
+      "face": "neutral",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": false,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": 21,
+          "z": 9
+        },
+        {
+          "t": 12,
+          "x": 21.7,
+          "z": 8.6
+        },
+        {
+          "t": 22,
+          "x": 22.2,
+          "z": 8.2
+        },
+        {
+          "t": 30,
+          "x": 22.5,
+          "z": 8
+        }
+      ],
+      "lin": true
+    },
+    {
+      "outfit": "jacket",
+      "shirt": "#6a523f",
+      "accent": "#b08a5c",
+      "pants": "#374139",
+      "shoeStyle": "boot",
+      "hat": "#3f4940",
+      "hatStyle": "flatcap",
+      "hair": "#30251f",
+      "beard": "moustache",
+      "build": "normal",
+      "skin": "#e0b18e",
+      "face": "worried",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": true,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": 28,
+          "z": 4
+        },
+        {
+          "t": 30,
+          "x": 28,
+          "z": 4
+        }
+      ]
+    },
+    {
+      "outfit": "coat",
+      "shirt": "#526376",
+      "accent": "#c1a77d",
+      "pants": "#313b47",
+      "shoeStyle": "boot",
+      "hat": "#39434b",
+      "hatStyle": "flatcap",
+      "hair": "#4a3627",
+      "beard": "none",
+      "build": "normal",
+      "skin": "#c88f6f",
+      "face": "surprised",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": true,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": 35,
+          "z": 9
+        },
+        {
+          "t": 30,
+          "x": 35,
+          "z": 9
+        }
+      ],
+      "armsUp": [
+        {
+          "t": 0,
+          "v": 0
+        },
+        {
+          "t": 14,
+          "v": 1
+        },
+        {
+          "t": 16,
+          "v": 0
+        },
+        {
+          "t": 30,
+          "v": 0
+        }
+      ]
+    },
+    {
+      "outfit": "jacket",
+      "shirt": "#5d6b72",
+      "accent": "#b79d75",
+      "pants": "#384047",
+      "shoeStyle": "boot",
+      "hat": "#454c4d",
+      "hatStyle": "flatcap",
+      "hair": "#45352c",
+      "beard": "beard",
+      "build": "normal",
+      "skin": "#edc9aa",
+      "face": "happy",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": true,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": 41,
+          "z": 4
+        },
+        {
+          "t": 30,
+          "x": 41,
+          "z": 4
+        }
+      ]
+    },
+    {
+      "outfit": "suit",
+      "shirt": "#59695d",
+      "accent": "#b39468",
+      "pants": "#343e47",
+      "shoeStyle": "boot",
+      "hat": "#38464b",
+      "hatStyle": "flatcap",
+      "hair": "#392c25",
+      "beard": "stubble",
+      "build": "stocky",
+      "skin": "#9b684f",
+      "face": "neutral",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": false,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": 48,
+          "z": 8
+        },
+        {
+          "t": 12,
+          "x": 48.7,
+          "z": 7.6
+        },
+        {
+          "t": 22,
+          "x": 49.2,
+          "z": 7.2
+        },
+        {
+          "t": 30,
+          "x": 49.5,
+          "z": 7
+        }
+      ],
+      "lin": true,
+      "emote": [
+        {
+          "t": 0,
+          "e": "neutral"
+        },
+        {
+          "t": 20,
+          "e": "surprised"
+        },
+        {
+          "t": 25,
+          "e": "neutral"
+        }
+      ]
+    },
+    {
+      "outfit": "jumper",
+      "shirt": "#596b78",
+      "accent": "#bca27b",
+      "pants": "#374139",
+      "shoeStyle": "boot",
+      "hat": "#3f4940",
+      "hatStyle": "flatcap",
+      "hair": "#30251f",
+      "beard": "moustache",
+      "build": "normal",
+      "skin": "#e7bea0",
+      "face": "worried",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": false,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": 54,
+          "z": 3
+        },
+        {
+          "t": 12,
+          "x": 54.7,
+          "z": 2.6
+        },
+        {
+          "t": 22,
+          "x": 55.2,
+          "z": 2.2
+        },
+        {
+          "t": 30,
+          "x": 55.5,
+          "z": 2
+        }
+      ],
+      "lin": true,
+      "armsUp": [
+        {
+          "t": 0,
+          "v": 0
+        },
+        {
+          "t": 4,
+          "v": 1
+        },
+        {
+          "t": 6,
+          "v": 0
+        },
+        {
+          "t": 30,
+          "v": 0
+        }
+      ]
+    },
+    {
+      "outfit": "coat",
+      "shirt": "#75543f",
+      "accent": "#b08a5d",
+      "pants": "#313b47",
+      "shoeStyle": "boot",
+      "hat": "#39434b",
+      "hatStyle": "flatcap",
+      "hair": "#4a3627",
+      "beard": "none",
+      "build": "normal",
+      "skin": "#d6a382",
+      "face": "surprised",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": true,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": 59,
+          "z": 9
+        },
+        {
+          "t": 30,
+          "x": 59,
+          "z": 9
+        }
+      ]
+    },
+    {
+      "outfit": "jacket",
+      "shirt": "#536476",
+      "accent": "#bca47b",
+      "pants": "#384047",
+      "shoeStyle": "boot",
+      "hat": "#454c4d",
+      "hatStyle": "flatcap",
+      "hair": "#45352c",
+      "beard": "beard",
+      "build": "normal",
+      "skin": "#eac4a4",
+      "face": "happy",
+      "armAngle": 1.5,
+      "y0": 0.85,
+      "noWalk": true,
+      "show": [
+        0,
+        30
+      ],
+      "keys": [
+        {
+          "t": 0,
+          "x": 52,
+          "z": 14
+        },
+        {
+          "t": 30,
+          "x": 52,
+          "z": 14
         }
       ]
     }
@@ -1045,5 +3399,5 @@
     }
   ],
   "actorPhysics": "kinematic",
-  "physicsNote": "Five grounded characters use the repository's kinematic actor option; 540x960 at 30fps, native camera logic, and character rig stay unchanged."
+  "physicsNote": "29 grounded, animation-driven characters fill the working test range; moving period service vehicles, a timed biplane flyover, signal flags, shoreline craft and equipment clusters use existing repository assets. The 13 native camera shots, 540x960 frame, 30fps timing, renderer and character rig are unchanged."
 }
