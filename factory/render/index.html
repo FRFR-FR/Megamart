@@ -157,6 +157,7 @@ function stepSim() {
   actors.forEach(A => { const k = lerpKeys(A.def.keys, simT, A.def.lin); let vx = (k.x - A.b.position.x) * 8, vz = (k.z - A.b.position.z) * 8; const sp = Math.hypot(vx, vz); if (sp > MAXV) { vx *= MAXV / sp; vz *= MAXV / sp; }
     A.b.velocity.x = vx; A.b.velocity.z = vz;
     if (story.actorPhysics === 'kinematic' || NOPHYS) {
+      A.animSpeed = Math.min(MAXV, Math.hypot(k.x - A.b.position.x, k.z - A.b.position.z) / DT);
       A.b.position.x = k.x; A.b.position.z = k.z; A.b.position.y = A.def.y0 ?? .02; A.b.velocity.set(0, 0, 0);
     } });
   world.step(DT); simT += DT; AUDIT.steps++;
@@ -168,7 +169,7 @@ function stepSim() {
       const pen = out > 0 ? rad - out : rad + Math.min(S.he.x - Math.abs(V.x), S.he.y - Math.abs(V.y), S.he.z - Math.abs(V.z)); if (pen > AUDIT.vis) { AUDIT.vis = pen; AUDIT.worst = tag + ' @t=' + simT.toFixed(2); } if (pen > .01) AUDIT.vis1cm++; } };
   if (story.actorPhysics !== 'kinematic') actors.forEach(A => SPHERES.forEach(y => chk({ x: A.b.position.x, y: A.b.position.y + y, z: A.b.position.z }, RAD, 'actor' + A.idx)));
   dyn.forEach(d => { const sh = d.b.shapes[0]; if (sh instanceof CANNON.Sphere) chk(d.b.position, sh.radius, 'ball'); });
-  actors.forEach(A => { const v = Math.hypot(A.b.velocity.x, A.b.velocity.z); A.speed += (v - A.speed) * .25; A.dist += v * DT; if (A.b.position.y < -1) AUDIT.fell++; });
+  actors.forEach(A => { const v = story.actorPhysics === 'kinematic' || NOPHYS ? (A.animSpeed || 0) : Math.hypot(A.b.velocity.x, A.b.velocity.z); A.speed += (v - A.speed) * .25; A.dist += v * DT; if (A.b.position.y < -1) AUDIT.fell++; });
   dyn.forEach(d => { if (d.b.position.y < -1) AUDIT.fell++; });
 }
 function simTo(t) { while (simT < t - 1e-9) stepSim(); }
