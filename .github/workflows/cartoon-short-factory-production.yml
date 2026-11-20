@@ -119,8 +119,13 @@ jobs:
             stories=( $STORY_GLOB )
           fi
           if [ "${#stories[@]}" -eq 0 ]; then
-            echo "No stories matched: $STORY_GLOB"
-            exit 0
+            if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+              stories=( "production/stories/london-mail-rail-30s.json" )
+              echo "No story JSON changed in this push; rendering the queued London Mail Rail short."
+            else
+              echo "No stories matched: $STORY_GLOB"
+              exit 0
+            fi
           fi
           mkdir -p production/renders
           for story in "${stories[@]}"; do
